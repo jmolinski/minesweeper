@@ -1,6 +1,3 @@
-// sapper game 1.1
-// author glenpl
-
 #include <iostream>
 #include <time.h>
 #include <windows.h>
@@ -55,6 +52,7 @@ void init_game();
 void clear_boards();
 void set_bombs_on_board();
 void set_fields_values();
+void set_field_value(UI, UI);
 void do_action(string, UI, UI);
 void mark_field(UI, UI);
 void finish_game(bool);
@@ -151,21 +149,26 @@ void set_bombs_on_board()
     }
 }
 
+void set_field_value(UI row, UI col)
+{
+    if(board_int[row][col] != FIELD_BOMB)
+    {
+        board_int[row][col] = count_bombs_around(row, col);
+        // if SHOW_ZEROES is true - show zero-valued fields
+        if(SHOW_ZEROES && board_int[row][col] == 0)
+        {
+            shown[row][col] = FIELD_SHOWN;
+            --hidden_fields;
+        }
+    }
+}
+
 void set_fields_values()
 {
     // set value to each non-bomb field
     for(UI row = 0; row < BOARD_SIZE; row++)
         for(UI col = 0; col < BOARD_SIZE; col++)
-            if(board_int[row][col] != FIELD_BOMB)
-            {
-                board_int[row][col] = count_bombs_around(row, col);
-                // if SHOW_ZEROES is true - show zero-valued fields
-                if(SHOW_ZEROES && board_int[row][col] == 0)
-                {
-                    shown[row][col] = FIELD_SHOWN;
-                    --hidden_fields;
-                }
-            }
+            set_field_value(row, col);
 }
 
 void init_game()
