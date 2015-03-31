@@ -3,7 +3,7 @@ using namespace std;
 typedef unsigned int UI;
 
 const UI BOARD_SIZE = 9; // board is a grid of x * x fields
-const UI BOMBS = 18; // number of bombs
+const UI BOMBS_AMOUNT = 18; // number of bombs
 const bool SHOW_ZEROES = true; // show all zero-valued fields
 // special values of fields
 const UI FIELD_CLEAR = 0;
@@ -29,7 +29,7 @@ UI shown[BOARD_SIZE][BOARD_SIZE]; // board with values: marked, hidden, shown fo
 // some global variables... :(
 UI flags = 0;
 bool lose = false;
-UI hidden_fields = BOARD_SIZE * BOARD_SIZE;
+UI hidden_fields_amount = BOARD_SIZE * BOARD_SIZE;
 
 // function index
 void start_game();

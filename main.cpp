@@ -70,7 +70,7 @@ void set_bombs_on_board()
 {
     // sets bombs on the board
     UI dec_bombs = 0;
-    while(dec_bombs != BOMBS)
+    while(dec_bombs != BOMBS_AMOUNT)
     {
         UI row = rand()%BOARD_SIZE;
         UI col = rand()%BOARD_SIZE;
@@ -91,7 +91,7 @@ void set_field_value(UI row, UI col)
         if(SHOW_ZEROES && board_int[row][col] == 0)
         {
             shown[row][col] = FIELD_SHOWN;
-            --hidden_fields;
+            --hidden_fields_amount;
         }
     }
 }
@@ -110,7 +110,7 @@ void init_game()
     // set each field to its default value
     clear_boards();
     set_bombs_on_board();
-    hidden_fields = BOARD_SIZE * BOARD_SIZE;
+    hidden_fields_amount = BOARD_SIZE * BOARD_SIZE;
     // set values of all non-bomb fields
     set_fields_values();
     lose = false;
@@ -169,7 +169,7 @@ void update_board()
 
 void mark_field(UI row, UI col)
 {
-    if(shown[row][col] == FIELD_HIDDEN && flags < BOMBS)
+    if(shown[row][col] == FIELD_HIDDEN && flags < BOMBS_AMOUNT)
     {
         shown[row][col] = FIELD_MARKED;
         flags++;
@@ -188,7 +188,7 @@ void do_action(string action, UI row, UI col)
     else if(action == "show" && shown[row][col] == FIELD_HIDDEN)
     {
         shown[row][col] = FIELD_SHOWN;
-        --hidden_fields;
+        --hidden_fields_amount;
     }
 }
 
@@ -252,14 +252,14 @@ void start_game()
     string action, row, col;
     while(true)
     {
-        cout << "Flags left: " << BOMBS - flags << "\n";
+        cout << "Flags left: " << BOMBS_AMOUNT - flags << "\n";
         cout << "Tell me what to do! (action[show/mark], row[1-9] , col[1-9]):\n>";
         cin>>action>>row>>col;
         val_input vi = validate_input(action, row, col);
         do_action(vi.action, vi.row, vi.col);
         update_board();
         print_board();
-        if((flags == BOMBS && hidden_fields == BOMBS) || lose)
+        if((flags == BOMBS_AMOUNT && hidden_fields_amount == BOMBS_AMOUNT) || lose)
             finish_game(lose);
     }
 }
