@@ -41,15 +41,16 @@ bool lose = false;
 UI hidden_fields = BOARD_SIZE * BOARD_SIZE;
 
 // function index
-void game();
+void start_game();
 void update_board();
 void update_field(UI, UI);
-UI count_bombs_around(int, int);
+UI count_bombs_around_field(int, int);
 void print_board();
 void print_board_main_body();
 void print_board_upper_body();
 void init_game();
 void clear_boards();
+void clear_field(UI, UI);
 void set_bombs_on_board();
 void set_fields_values();
 void set_field_value(UI, UI);
@@ -121,16 +122,19 @@ void print_board()
     printf("\n");
 }
 
+void clear_field(UI row, UI col)
+{
+    board[row][col] = 'X';
+    board_int[row][col] = 0;
+    shown[row][col] = FIELD_HIDDEN;
+}
+
 void clear_boards()
 {
     // set all fields to its default value
     for(UI row = 0; row < BOARD_SIZE; row++)
         for(UI col = 0; col < BOARD_SIZE; col++)
-        {
-            board[row][col] = 'X';
-            board_int[row][col] = 0;
-            shown[row][col] = FIELD_HIDDEN;
-        }
+            clear_field(row, col);
 }
 
 void set_bombs_on_board()
@@ -153,7 +157,7 @@ void set_field_value(UI row, UI col)
 {
     if(board_int[row][col] != FIELD_BOMB)
     {
-        board_int[row][col] = count_bombs_around(row, col);
+        board_int[row][col] = count_bombs_around_field(row, col);
         // if SHOW_ZEROES is true - show zero-valued fields
         if(SHOW_ZEROES && board_int[row][col] == 0)
         {
@@ -173,9 +177,9 @@ void set_fields_values()
 
 void init_game()
 {
+    srand(time(NULL));
     // set each field to its default value
     clear_boards();
-    // sets bombs on the board
     set_bombs_on_board();
     hidden_fields = BOARD_SIZE * BOARD_SIZE;
     // set values of all non-bomb fields
@@ -185,22 +189,30 @@ void init_game()
     update_board();
 }
 
-UI count_bombs_around(int row, int col)
+inline bool is_field_a_bomb(UI row, UI col)
+{
+    return board_int[row][col] == FIELD_BOMB;
+}
+
+UI count_bombs_around_field(int row, int col)
 {
     // counts bombs around XY field
-    int rowp, colp, num = 0;
-    for(int i = row - 1; i <= row + 1; i++)
+    int bombs = 0;
+    int rows[3] = {row-1, row, row+1};
+    int cols[3] = {col-1, col, col+1};
+    for(int row_being_checked: rows)
     {
-        rowp = i;
-        if(rowp < 0 || rowp > (int)(BOARD_SIZE-1)) continue;
-        for(int j = col - 1; j <= col + 1; j++)
+        if(row_being_checked < 0 || row_being_checked > (int)(BOARD_SIZE-1))
+            continue;
+        for(int col_being_checked: cols)
         {
-            colp = j;
-            if(colp < 0 || colp > (int)(BOARD_SIZE-1)) continue;
-            if(board_int[rowp][colp] == FIELD_BOMB) num++;
+            if(col_being_checked < 0 || col_being_checked > (int)(BOARD_SIZE-1))
+                continue;
+            if(is_field_a_bomb(row_being_checked, col_being_checked))
+                bombs++;
         }
     }
-    return num;
+    return bombs;
 }
 
 void update_field(UI row, UI col)
@@ -244,7 +256,7 @@ void do_action(string action, UI row, UI col)
 {
     if(action == "mark")
         mark_field(row, col);
-    if(action == "show" && shown[row][col] == FIELD_HIDDEN)
+    else if(action == "show" && shown[row][col] == FIELD_HIDDEN)
     {
         shown[row][col] = FIELD_SHOWN;
         --hidden_fields;
@@ -254,13 +266,23 @@ void do_action(string action, UI row, UI col)
 val_input validate_input(string act, string rowp, string colp)
 {
     val_input validated;
-    if(act == "show" || act == "mark") validated.action = act;
-    else validated.action = "invalid";
     int rown = to_int(rowp) - 1, coln = to_int(colp) - 1;
-    if(rown > (BOARD_SIZE-1) || rown < 0) validated.row = 0;
-    else validated.row = rown;
-    if(coln > (BOARD_SIZE-1) || coln < 0) validated.col = 0;
-    else validated.col = coln;
+
+    if(act == "show" || act == "mark")
+        validated.action = act;
+    else
+        validated.action = "invalid";
+
+    if(rown > (BOARD_SIZE-1) || rown < 0)
+        validated.row = 0;
+    else
+        validated.row = rown;
+
+    if(coln > (BOARD_SIZE-1) || coln < 0)
+        validated.col = 0;
+    else
+        validated.col = coln;
+
     return validated;
 }
 
@@ -286,7 +308,7 @@ void continue_or_end()
 
 void finish_game(bool lose)
 {
-    if(lose == true)
+    if(lose)
         cout << "\n\nWhat a pity! You stepped on a bomb!\n";
     else
         cout << "\n\nCongratulations! You marked all bombs correctly and saved many human beings!\n";
@@ -294,8 +316,10 @@ void finish_game(bool lose)
     continue_or_end();
 }
 
-void game()
+void start_game()
 {
+    init_game();
+    print_board();
     string action, row, col;
     while(true)
     {
@@ -306,19 +330,13 @@ void game()
         do_action(vi.action, vi.row, vi.col);
         update_board();
         print_board();
-        if((flags == BOMBS && hidden_fields == BOMBS) || lose == true)
+        if((flags == BOMBS && hidden_fields == BOMBS) || lose)
             finish_game(lose);
     }
 }
 
 int main()
 {
-    srand(time(NULL));
-    // initialize boards etc
-    init_game();
-    //print board for the first time
-    print_board();
-    // start game
-    game();
+    start_game();
     return 0;
 }
