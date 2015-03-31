@@ -129,19 +129,19 @@ UI count_bombs_around_field(int row, int col)
     int bombs = 0;
     int rows[3] = {row-1, row, row+1};
     int cols[3] = {col-1, col, col+1};
-    for(int row_being_checked: rows)
+    for(int current_row: rows)
     {
-        if(row_being_checked < 0 || row_being_checked > (int)(BOARD_SIZE-1))
-            continue;
-        for(int col_being_checked: cols)
-        {
-            if(col_being_checked < 0 || col_being_checked > (int)(BOARD_SIZE-1))
-                continue;
-            if(is_field_a_bomb(row_being_checked, col_being_checked))
-                bombs++;
-        }
+        if(is_coord_inside_board(current_row))
+            for(int current_col: cols)
+                if(is_coord_inside_board(current_col) && is_field_a_bomb(current_row, current_col))
+                    bombs++;
     }
     return bombs;
+}
+
+inline bool is_coord_inside_board(UI coord)
+{
+    return (coord >= 0 && coord < BOARD_SIZE);
 }
 
 void update_field(UI row, UI col)
