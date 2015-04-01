@@ -209,11 +209,13 @@ void mark_field(UI row, UI col)
     if(shown[row][col] == FIELD_HIDDEN && flags < BOMBS_AMOUNT)
     {
         shown[row][col] = FIELD_MARKED;
+        update_field(row, col);
         flags++;
     }
     else if(shown[row][col] == FIELD_MARKED)
     {
         shown[row][col] = FIELD_HIDDEN;
+        update_field(row, col);
         flags--;
     }
 }
@@ -225,6 +227,7 @@ void do_action(string action, UI row, UI col)
     else if(action == "show" && shown[row][col] == FIELD_HIDDEN)
     {
         shown[row][col] = FIELD_SHOWN;
+        update_field(row, col);
         --hidden_fields_amount;
     }
 }
@@ -290,7 +293,6 @@ void start_game()
         cin>>action>>row>>col;
         val_input vi = validate_input(action, row, col);
         do_action(vi.action, vi.row, vi.col);
-        update_board();
         print_board();
         if((flags == BOMBS_AMOUNT && hidden_fields_amount == BOMBS_AMOUNT) || lose)
             finish_game(lose);
