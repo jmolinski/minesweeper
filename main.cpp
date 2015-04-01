@@ -195,19 +195,19 @@ void do_action(string action, UI row, UI col)
 val_input validate_input(string act, string rowp, string colp)
 {
     val_input validated;
-    int rown = to_int(rowp) - 1, coln = to_int(colp) - 1;
+    int rown = stoi(rowp) - 1, coln = stoi(colp) - 1;
 
     if(act == "show" || act == "mark")
         validated.action = act;
     else
         validated.action = "invalid";
 
-    if(rown > (BOARD_SIZE-1) || rown < 0)
+    if(!is_coord_inside_board(rown))
         validated.row = 0;
     else
         validated.row = rown;
 
-    if(coln > (BOARD_SIZE-1) || coln < 0)
+    if(!is_coord_inside_board(coln))
         validated.col = 0;
     else
         validated.col = coln;

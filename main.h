@@ -53,21 +53,3 @@ bool is_coord_inside_board(UI coord);
 val_input validate_input(string act, string row, string col);
 string to_string(int);
 int to_string(string);
-
-// convert int to string
-template <class T>
-inline std::string to_string(const T& t)
-{
-    std::stringstream ss;
-    ss << t;
-    return ss.str();
-}
-
-template <class T>
-inline int to_int(const T& str)
-{
-    int i;
-    istringstream iss(str);
-    iss >> i;
-    return i;
-}
