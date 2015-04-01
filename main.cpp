@@ -11,12 +11,12 @@
 
 void print_board_upper_body()
 {
-    printf("\n");
+    printf("\n\n");
     printf("                    ");
     for(UI i = 0; i < BOARD_SIZE; i++)
     {
         string col = "%i  ";
-        col += [](int x)->string {if(x>8) return ""; else return " ";}(i);
+        col += [](int x)->string {return ((x>8)?(""):(" "));}(i);
         printf(col.c_str(), i+1);
     }
     printf("\n                   ");
@@ -53,12 +53,12 @@ void print_board_main_body()
 {
     for(UI row = 0; row < BOARD_SIZE; row++)
     {
-        string spaces = [](UI row_num)->string {if(row_num>8) return ""; else return " ";}(row);
+        string spaces = [](UI row_num)->string {return ((row_num>8)?(""):(" "));}(row);
         spaces += "               %i";
         printf(spaces.c_str(), row+1);
         print_row(row);
         spaces = string_of_x_spaces(spaces.length());
-        spaces += [](UI row_num)->string {if(row_num>8) return " "; else return "";}(row);
+        spaces += [](UI row_num)->string {return ((row_num>8)?(" "):(""));}(row);
         printf(spaces.c_str());
         if(row < BOARD_SIZE-1)
             print_line_separating_rows();
@@ -74,7 +74,7 @@ void print_board_lower_body()
     for(UI i = 0; i < BOARD_SIZE; i++)
     {
         string col = "%i  ";
-        col += [](int x)->string {if(x>8) return ""; else return " ";}(i);
+        col += [](int x)->string {return ((x<=8)?(" "):(""));}(i);
         printf(col.c_str(), i+1);
     }
     printf("\n\n");
@@ -83,7 +83,6 @@ void print_board_lower_body()
 void print_board()
 {
     system("CLS");
-    printf("\n");
     print_board_upper_body();
     print_board_main_body();
     print_board_lower_body();
@@ -233,23 +232,19 @@ void do_action(string action, UI row, UI col)
 val_input validate_input(string act, string rowp, string colp)
 {
     val_input validated;
-    int rown = stoi(rowp) - 1, coln = stoi(colp) - 1;
-
-    if(act == "show" || act == "mark")
-        validated.action = act;
-    else
-        validated.action = "invalid";
-
-    if(!is_coord_inside_board(rown))
-        validated.row = 0;
-    else
-        validated.row = rown;
-
-    if(!is_coord_inside_board(coln))
-        validated.col = 0;
-    else
-        validated.col = coln;
-
+    int rown = BOARD_SIZE + 1, coln = BOARD_SIZE +1;
+    try
+    {
+        rown = stoi(rowp) - 1, coln = stoi(colp) - 1;
+    }
+    catch(...)
+    {
+        // error when converting invalid value from
+        // string to int with stoi(), ignore
+    }
+    validated.action = ((act == "show" || act == "mark")?(act):("invalid"));
+    validated.row = ((is_coord_inside_board(rown))?(rown):(0));
+    validated.col = ((is_coord_inside_board(coln))?(coln):(0));
     return validated;
 }
 

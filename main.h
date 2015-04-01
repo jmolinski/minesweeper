@@ -3,7 +3,7 @@ using namespace std;
 typedef unsigned int UI;
 
 // settings
-const UI BOARD_SIZE = 25; // board is a grid of x * x fields
+const UI BOARD_SIZE = 20; // board is a grid of x * x fields
 const UI BOMBS_AMOUNT = 36; // number of bombs set on the board
 const bool SHOW_ZEROES = true; // show all zero-valued fields
 // special values of fields
