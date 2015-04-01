@@ -288,7 +288,7 @@ string ask_about_prefered_language()
     while(selected != "en" && selected != "EN" && selected != "PL" && selected != "pl" &&
           selected != "1" && selected != "1")
     {
-            cout<<"Select language:\n1.EN\n2.PL\n>";
+            cout<<"Select language:\n1.EN [English]\n2.PL [Polski]\n>";
             cin>>selected;
     }
     if(selected == "1" || selected == "EN" || selected == "en")
