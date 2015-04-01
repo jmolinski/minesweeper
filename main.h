@@ -2,10 +2,12 @@ using namespace std;
 
 typedef unsigned int UI;
 
-// settings
+// precompiled settings
 const UI BOARD_SIZE = 10; // board is a grid of x * x fields
 const UI BOMBS_AMOUNT = 20; // number of bombs set on the board
 const bool SHOW_ZEROES = true; // show all zero-valued fields
+// value will be set before geme starts
+string language;
 // special values of fields
 const UI FIELD_CLEAR = 0;
 const UI FIELD_BOMB = 9;
@@ -57,3 +59,4 @@ bool is_coord_inside_board(UI coord);
 val_input validate_input(string act, string row, string col);
 string string_of_x_spaces(UI x);
 void print_line_separating_rows();
+string ask_about_prefered_language();

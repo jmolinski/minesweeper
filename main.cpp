@@ -4,10 +4,10 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <conio.h>
-#include <sstream>
 #include <string>
 // the header with variable and function declarations etc
 #include "main.h"
+#include "translations.h"
 
 void print_board_upper_body()
 {
@@ -258,14 +258,15 @@ void continue_or_end()
     {
         cout<<">";
         cin>>answer;
+        answer = to_en(answer);
     }
     if(answer == "no")
     {
-        cout << "Ok, goodbye! :) [press any button]";
+        cout << loc("Ok, goodbye! :) [press any button]", language);
         getch();
         exit(0);
     }
-    cout<<"Here we go! [press any button]";
+    cout<< loc("Here we go! [press any button]", language);
     init_game();
     getch();
     print_board();
@@ -274,24 +275,41 @@ void continue_or_end()
 void finish_game(bool lose)
 {
     if(lose)
-        cout << "\n\nWhat a pity! You stepped on a bomb!\n";
+        cout << loc("\n\nWhat a pity! You stepped on a bomb!\n", language);
     else
-        cout << "\n\nCongratulations! You marked all bombs correctly and saved many human beings!\n";
-    cout<<"Would you like to play once again? [yes/no]\n";
+        cout << loc("\n\nCongratulations! You marked all bombs correctly and saved many human beings!\n", language);
+    cout<< loc("Would you like to play once again? [yes/no]\n", language);
     continue_or_end();
+}
+
+string ask_about_prefered_language()
+{
+    string selected;
+    while(selected != "en" && selected != "EN" && selected != "PL" && selected != "pl" &&
+          selected != "1" && selected != "1")
+    {
+            cout<<"Select language:\n1.EN\n2.PL\n>";
+            cin>>selected;
+    }
+    if(selected == "1" || selected == "EN" || selected == "en")
+        return "EN";
+    if(selected == "2" || selected == "PL" || selected == "pl")
+        return "PL";
+    return "EN";
 }
 
 void start_game()
 {
+    language = ask_about_prefered_language();
     init_game();
     print_board();
     string action, row, col;
     while(true)
     {
-        cout << "Flags left: " << BOMBS_AMOUNT - flags << "\n";
-        cout << "Tell me what to do! (action[show/mark], row[1-9] , col[1-9]):\n>";
+        cout << loc("Flags left: ", language) << BOMBS_AMOUNT - flags << "\n";
+        cout << loc("Tell me what to do! (action[show/mark], row[1-9] , col[1-9]):\n>", language);
         cin>>action>>row>>col;
-        val_input vi = validate_input(action, row, col);
+        val_input vi = validate_input(to_en(action), row, col);
         do_action(vi.action, vi.row, vi.col);
         print_board();
         if((flags == BOMBS_AMOUNT && hidden_fields_amount == BOMBS_AMOUNT) || lose)
