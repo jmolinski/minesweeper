@@ -2,8 +2,9 @@ using namespace std;
 
 typedef unsigned int UI;
 
-const UI BOARD_SIZE = 9; // board is a grid of x * x fields
-const UI BOMBS_AMOUNT = 18; // number of bombs
+// settings
+const UI BOARD_SIZE = 25; // board is a grid of x * x fields
+const UI BOMBS_AMOUNT = 36; // number of bombs set on the board
 const bool SHOW_ZEROES = true; // show all zero-valued fields
 // special values of fields
 const UI FIELD_CLEAR = 0;
@@ -38,7 +39,10 @@ void update_field(UI row, UI col);
 UI count_bombs_around_field(int row, int col);
 void print_board();
 void print_board_main_body();
+void print_row(UI row);
+void print_line_separating_rows();
 void print_board_upper_body();
+void print_board_lower_body();
 void init_game();
 void clear_boards();
 void clear_field(UI row, UI col);
@@ -51,5 +55,5 @@ void finish_game(bool);
 void continue_or_end();
 bool is_coord_inside_board(UI coord);
 val_input validate_input(string act, string row, string col);
-string to_string(int);
-int to_string(string);
+string string_of_x_spaces(UI x);
+void print_line_separating_rows();

@@ -11,44 +11,82 @@
 
 void print_board_upper_body()
 {
+    printf("\n");
     printf("                    ");
     for(UI i = 0; i < BOARD_SIZE; i++)
-        printf("%i   ", i+1);
+    {
+        string col = "%i  ";
+        col += [](int x)->string {if(x>8) return ""; else return " ";}(i);
+        printf(col.c_str(), i+1);
+    }
     printf("\n                   ");
     for(UI i = 0; i < BOARD_SIZE*4-1; i++)
         printf("_");
     printf("\n");
 }
 
+string string_of_x_spaces(UI x)
+{
+    string spaces;
+    for(UI i = 0; i < x; i++)
+        spaces += ' ';
+    return spaces;
+}
+
+void print_line_separating_rows()
+{
+    printf("|");
+    for(UI j = 0; j < BOARD_SIZE-1; j++)
+        printf("---+");
+    printf("---|\n");
+}
+
+void print_row(UI row)
+{
+    printf(" | ");
+    for(UI col = 0; col < BOARD_SIZE; col++)
+        cout << board[row][col] << " | ";
+    printf("%i\n", row+1);
+}
+
 void print_board_main_body()
 {
+    for(UI row = 0; row < BOARD_SIZE; row++)
+    {
+        string spaces = [](UI row_num)->string {if(row_num>8) return ""; else return " ";}(row);
+        spaces += "               %i";
+        printf(spaces.c_str(), row+1);
+        print_row(row);
+        spaces = string_of_x_spaces(spaces.length());
+        spaces += [](UI row_num)->string {if(row_num>8) return " "; else return "";}(row);
+        printf(spaces.c_str());
+        if(row < BOARD_SIZE-1)
+            print_line_separating_rows();
+    }
+}
+
+void print_board_lower_body()
+{
+    printf(" ");
+    for(UI i = 0; i < BOARD_SIZE*4-1; i++)
+        printf("-");
+    printf("\n                    ");
     for(UI i = 0; i < BOARD_SIZE; i++)
     {
-        printf("                %i | ", i+1);
-        for(UI j = 0; j < BOARD_SIZE; j++)
-            cout << board[i][j] << " | ";
-        printf("%i\n                  ", i+1);
-        if(i < BOARD_SIZE-1)
-        {
-            printf("|");
-            for(UI j = 0; j < BOARD_SIZE-1; j++)
-                printf("---+");
-            printf("---|\n");
-        }
+        string col = "%i  ";
+        col += [](int x)->string {if(x>8) return ""; else return " ";}(i);
+        printf(col.c_str(), i+1);
     }
+    printf("\n\n");
 }
 
 void print_board()
 {
     system("CLS");
-    // print upper body of the board
-    print_board_upper_body();
-    // print main body of the board
-    print_board_main_body();
-    printf(" ");
-    for(UI i = 0; i < BOARD_SIZE*4-1; i++)
-        printf("-");
     printf("\n");
+    print_board_upper_body();
+    print_board_main_body();
+    print_board_lower_body();
 }
 
 void clear_field(UI row, UI col)
