@@ -8,6 +8,7 @@
 // the header with variable and function declarations etc
 #include "main.h"
 #include "translations.h"
+#include "save.h"
 
 void print_board_upper_body()
 {
@@ -230,6 +231,8 @@ void do_action(string action, UI row, UI col)
         update_field(row, col);
         --hidden_fields_amount;
     }
+    else if(action == "save_game")
+        save_progress_to_file();
 }
 
 val_input validate_input(string act, string rowp, string colp)
@@ -245,7 +248,7 @@ val_input validate_input(string act, string rowp, string colp)
         // error when converting invalid value from
         // string to int with stoi(), ignore
     }
-    validated.action = ((act == "show" || act == "mark")?(act):("invalid"));
+    validated.action = ((act == "show" || act == "mark" || act == "save_game")?(act):("invalid"));
     validated.row = ((is_coord_inside_board(rown))?(rown):(0));
     validated.col = ((is_coord_inside_board(coln))?(coln):(0));
     return validated;
@@ -286,10 +289,10 @@ string ask_about_prefered_language()
 {
     string selected;
     while(selected != "en" && selected != "EN" && selected != "PL" && selected != "pl" &&
-          selected != "1" && selected != "1")
+            selected != "1" && selected != "2")
     {
-            cout<<"Select language:\n1.EN [English]\n2.PL [Polski]\n>";
-            cin>>selected;
+        cout<<"Select language:\n1.EN [English]\n2.PL [Polski]\n>";
+        cin>>selected;
     }
     if(selected == "1" || selected == "EN" || selected == "en")
         return "EN";
@@ -298,16 +301,111 @@ string ask_about_prefered_language()
     return "EN";
 }
 
+bool load_game_from_file()
+{
+    cout << loc("\nSelect game mode:\n1.Start new game\n2.Continue saved game\n>", language);
+    getch();
+}
+
+void specify_settings()
+{
+    specify_board_size();
+    specify_bombs_amount();
+    specify_zeroes_shown();
+}
+
+void specify_board_size()
+{
+    int input_int = 0;
+    while(input_int > 99 || input_int < 1)
+    {
+        cout << loc("\nSpecify the size of the board (1 to 99)\n>", language);
+        string input;
+        cin>>input;
+        try
+        {
+            input_int = stoi(input);
+        }
+        catch(...)
+        {
+            // error when converting using stoi()
+            // ignore
+        }
+    }
+    BOARD_SIZE = input_int;
+}
+
+void specify_bombs_amount()
+{
+    int input_int = 0;
+    while(input_int > BOARD_SIZE*BOARD_SIZE || input_int < 1)
+    {
+        cout << loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>", language);
+        string input;
+        cin>>input;
+        try
+        {
+            input_int = stoi(input);
+        }
+        catch(...)
+        {
+            // error when converting using stoi()
+            // ignore
+        }
+    }
+    BOMBS_AMOUNT = input_int;
+}
+
+void specify_zeroes_shown()
+{
+    string input;
+    while(input != "true" && input != "false")
+    {
+        cout << loc("\nSpecify if the zeroes will be shown since the game begin: [true/false]\n>", language);
+        cin>>input;
+        input = to_en(input);
+    }
+    SHOW_ZEROES = ( (input == "true") ? (true) : (false) );
+}
+
+void start_new_game_or_continue_saved_proggress()
+{
+    string game_mode = "";
+    while(game_mode != "1" && game_mode != "2")
+    {
+        cout << loc("\nSelect game mode:\n1.Start new game\n2.Continue saved game\n>", language);
+        cin>>game_mode;
+    }
+    if(game_mode == "1")
+    {
+        specify_settings();
+        init_game();
+    }
+    if(game_mode == "2")
+        if(continue_saved_game_from_file() == false)
+        {
+            cout << loc("\nError! No saved progress available. [Press any botton to close game]", language);
+            getch();
+            exit(0);
+        }
+}
+
 void start_game()
 {
     language = ask_about_prefered_language();
-    init_game();
+    start_new_game_or_continue_saved_proggress();
+    update_board();
     print_board();
+    main_game();
+}
+
+void main_game()
+{
     string action, row, col;
     while(true)
     {
         cout << loc("Flags left: ", language) << BOMBS_AMOUNT - flags << "\n";
-        cout << loc("Tell me what to do! (action[show/mark], row[1-9] , col[1-9]):\n>", language);
+        cout << loc("Tell me what to do! (action[show/mark/save_game], row[1-9] , col[1-9]):\n>", language);
         cin>>action>>row>>col;
         val_input vi = validate_input(to_en(action), row, col);
         do_action(vi.action, vi.row, vi.col);

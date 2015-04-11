@@ -2,10 +2,10 @@ using namespace std;
 
 typedef unsigned int UI;
 
-// precompiled settings
-const UI BOARD_SIZE = 10; // board is a grid of x * x fields
-const UI BOMBS_AMOUNT = 20; // number of bombs set on the board
-const bool SHOW_ZEROES = true; // show all zero-valued fields
+// settings
+UI BOARD_SIZE = 9; // board is a grid of x * x fields
+UI BOMBS_AMOUNT = 18; // number of bombs set on the board
+bool SHOW_ZEROES = true; // show all zero-valued fields
 // value will be set before geme starts
 string language;
 // special values of fields
@@ -25,9 +25,9 @@ struct validated_input
 typedef validated_input val_input;
 
 // boards
-string board[BOARD_SIZE][BOARD_SIZE]; // board that will be displayed to user
-UI board_int[BOARD_SIZE][BOARD_SIZE]; // board with actual fields' values
-UI shown[BOARD_SIZE][BOARD_SIZE]; // board with values: marked, hidden, shown for each field
+string board[100][100]; // board that will be displayed to user
+UI board_int[100][100]; // board with actual fields' values
+UI shown[100][100]; // board with values: marked, hidden, shown for each field
 
 // some global variables... :(
 UI flags = 0;
@@ -60,3 +60,10 @@ val_input validate_input(string act, string row, string col);
 string string_of_x_spaces(UI x);
 void print_line_separating_rows();
 string ask_about_prefered_language();
+bool load_game_from_file();
+void start_new_game_or_continue_saved_proggress();
+void specify_settings();
+void specify_board_size();
+void specify_bombs_amount();
+void specify_zeroes_shown();
+void main_game();
