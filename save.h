@@ -28,7 +28,4 @@ void save_progress_to_file()
         for(UI j = 0; j < BOARD_SIZE; j++)
             saved_progress << board[i][j] << " " << board_int[i][j] << " " << shown[i][j] << "\n";
     saved_progress.close();
-    cout << loc("\n\nSaved. [Press any button]", language);
-    getch();
-    exit(0);
 }

@@ -5,10 +5,24 @@
 #include <stdio.h>
 #include <conio.h>
 #include <string>
-// the header with variable and function declarations etc
 #include "main.h"
 #include "translations.h"
 #include "save.h"
+
+bool to_int(int& val, string str_val)
+{
+    try
+    {
+        val = stoi(str_val);
+    }
+    catch(...)
+    {
+        cout << loc("\nInvalid value!", language);
+        val = 0;
+        return false;
+    }
+    return true;
+}
 
 void print_board_upper_body()
 {
@@ -232,7 +246,12 @@ void do_action(string action, UI row, UI col)
         --hidden_fields_amount;
     }
     else if(action == "save_game")
+    {
         save_progress_to_file();
+        cout << loc("\n\nSaved. [Press any button]", language);
+        getch();
+        exit(0);
+    }
 }
 
 val_input validate_input(string act, string rowp, string colp)
@@ -301,12 +320,6 @@ string ask_about_prefered_language()
     return "EN";
 }
 
-bool load_game_from_file()
-{
-    cout << loc("\nSelect game mode:\n1.Start new game\n2.Continue saved game\n>", language);
-    getch();
-}
-
 void specify_settings()
 {
     specify_board_size();
@@ -322,15 +335,8 @@ void specify_board_size()
         cout << loc("\nSpecify the size of the board (1 to 99)\n>", language);
         string input;
         cin>>input;
-        try
-        {
-            input_int = stoi(input);
-        }
-        catch(...)
-        {
-            // error when converting using stoi()
-            // ignore
-        }
+        if(to_int(input_int, input) && (input_int > 99 || input_int < 1))
+            cout << loc("\nInvalid value!", language);
     }
     BOARD_SIZE = input_int;
 }
@@ -343,15 +349,8 @@ void specify_bombs_amount()
         cout << loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>", language);
         string input;
         cin>>input;
-        try
-        {
-            input_int = stoi(input);
-        }
-        catch(...)
-        {
-            // error when converting using stoi()
-            // ignore
-        }
+        if(to_int(input_int, input) && (input_int > 99 || input_int < 1))
+            cout << loc("\nInvalid value!", language);
     }
     BOMBS_AMOUNT = input_int;
 }
@@ -364,6 +363,8 @@ void specify_zeroes_shown()
         cout << loc("\nSpecify if the zeroes will be shown since the game begin: [true/false]\n>", language);
         cin>>input;
         input = to_en(input);
+        if(input != "true" && input != "false")
+            cout << loc("\nInvalid value!", language);
     }
     SHOW_ZEROES = ( (input == "true") ? (true) : (false) );
 }

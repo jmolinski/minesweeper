@@ -49,6 +49,8 @@ string PL(string message)
         return "\nPodaj ilosc bomb rozmieszonych na planszy (od 1 do kwadratu wielkosci planszy)\n>";
     if(message == "\nSpecify if the zeroes will be shown since the game begin: [true/false]\n>")
         return "\nOkresl czy zera maja byc pokazane od poczatku rozgrywki [prawda/falsz]\n>";
+    if(message == "\nInvalid value!")
+        return "\nNiepoprawna wartosc!";
     // default
     return message;
 }
