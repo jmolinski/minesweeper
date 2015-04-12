@@ -17,7 +17,6 @@ bool to_int(int& val, string str_val)
     }
     catch(...)
     {
-        cout << loc("\nInvalid value!", language);
         val = 0;
         return false;
     }
@@ -335,7 +334,7 @@ void specify_board_size()
         cout << loc("\nSpecify the size of the board (1 to 99)\n>", language);
         string input;
         cin>>input;
-        if(to_int(input_int, input) && (input_int > 99 || input_int < 1))
+        if(to_int(input_int, input) == false || (input_int > 99 || input_int < 1))
             cout << loc("\nInvalid value!", language);
     }
     BOARD_SIZE = input_int;
@@ -349,7 +348,7 @@ void specify_bombs_amount()
         cout << loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>", language);
         string input;
         cin>>input;
-        if(to_int(input_int, input) && (input_int > 99 || input_int < 1))
+        if(to_int(input_int, input) == false || (input_int > 99 || input_int < 1))
             cout << loc("\nInvalid value!", language);
     }
     BOMBS_AMOUNT = input_int;
