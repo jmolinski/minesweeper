@@ -3,6 +3,7 @@ using namespace std;
 typedef unsigned int UI;
 
 // settings
+const UI MAX_BOARD_SIZE = 100;
 UI BOARD_SIZE = 9; // board is a grid of x * x fields
 UI BOMBS_AMOUNT = 18; // number of bombs set on the board
 bool SHOW_ZEROES = true; // show all zero-valued fields
@@ -25,9 +26,9 @@ struct validated_input
 typedef validated_input val_input;
 
 // boards
-string board[100][100]; // board that will be displayed to user
-UI board_int[100][100]; // board with actual fields' values
-UI shown[100][100]; // board with values: marked, hidden, shown for each field
+string board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]; // board that will be displayed to user
+UI board_int[MAX_BOARD_SIZE][MAX_BOARD_SIZE]; // board with actual fields' values
+UI shown[MAX_BOARD_SIZE][MAX_BOARD_SIZE]; // board with values: marked, hidden, shown for each field
 
 // some global variables... :(
 UI flags = 0;
