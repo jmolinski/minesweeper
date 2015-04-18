@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <conio.h>
 #include <string>
-#include "main.h"
 #include "translations.h"
+#include "main.h"
 #include "save.h"
 
 bool to_int(int& val, string str_val)
@@ -23,7 +23,20 @@ bool to_int(int& val, string str_val)
     return true;
 }
 
-void print_board_upper_body()
+Sapper::Sapper()
+{
+    translator.set_language(user_interactor.ask_about_prefered_language());
+    start_new_game_or_continue_saved_proggress();
+}
+
+void Sapper::run()
+{
+    update_board();
+    print_board();
+    main_game();
+}
+
+void Sapper::print_board_upper_body()
 {
     printf("\n\n");
     printf("                    ");
@@ -39,7 +52,7 @@ void print_board_upper_body()
     printf("\n");
 }
 
-string string_of_x_spaces(UI x)
+string Sapper::string_of_x_spaces(UI x)
 {
     string spaces;
     for(UI i = 0; i < x; i++)
@@ -47,7 +60,7 @@ string string_of_x_spaces(UI x)
     return spaces;
 }
 
-void print_line_separating_rows()
+void Sapper::print_line_separating_rows()
 {
     printf("|");
     for(UI j = 0; j < BOARD_SIZE-1; j++)
@@ -55,7 +68,7 @@ void print_line_separating_rows()
     printf("---|\n");
 }
 
-void print_row(UI row)
+void Sapper::print_row(UI row)
 {
     printf(" | ");
     for(UI col = 0; col < BOARD_SIZE; col++)
@@ -63,7 +76,7 @@ void print_row(UI row)
     printf("%i\n", row+1);
 }
 
-void print_board_main_body()
+void Sapper::print_board_main_body()
 {
     for(UI row = 0; row < BOARD_SIZE; row++)
     {
@@ -79,7 +92,7 @@ void print_board_main_body()
     }
 }
 
-void print_board_lower_body()
+void Sapper::print_board_lower_body()
 {
     printf(" ");
     for(UI i = 0; i < BOARD_SIZE*4-1; i++)
@@ -94,22 +107,23 @@ void print_board_lower_body()
     printf("\n\n");
 }
 
-void print_board()
+void Sapper::print_board()
 {
     system("CLS");
     print_board_upper_body();
     print_board_main_body();
     print_board_lower_body();
 }
+///////////////////////////////////////////////////////////////////////////////////////
 
-void clear_field(UI row, UI col)
+void Sapper::clear_field(UI row, UI col)
 {
     board[row][col] = 'X';
     board_int[row][col] = 0;
     shown[row][col] = FIELD_HIDDEN;
 }
 
-void clear_boards()
+void Sapper::clear_boards()
 {
     // set all fields to its default value
     for(UI row = 0; row < BOARD_SIZE; row++)
@@ -117,7 +131,7 @@ void clear_boards()
             clear_field(row, col);
 }
 
-void set_bombs_on_board()
+void Sapper::set_bombs_on_board()
 {
     // sets bombs on the board
     UI dec_bombs = 0;
@@ -133,7 +147,7 @@ void set_bombs_on_board()
     }
 }
 
-void set_field_value(UI row, UI col)
+void Sapper::set_field_value(UI row, UI col)
 {
     if(board_int[row][col] != FIELD_BOMB)
     {
@@ -147,7 +161,7 @@ void set_field_value(UI row, UI col)
     }
 }
 
-void set_fields_values()
+void Sapper::set_fields_values()
 {
     // set value to each non-bomb field
     for(UI row = 0; row < BOARD_SIZE; row++)
@@ -155,7 +169,7 @@ void set_fields_values()
             set_field_value(row, col);
 }
 
-void init_game()
+void Sapper::init_game()
 {
     srand(time(NULL));
     // set each field to its default value
@@ -169,12 +183,12 @@ void init_game()
     update_board();
 }
 
-inline bool is_field_a_bomb(UI row, UI col)
+inline bool Sapper::is_field_a_bomb(UI row, UI col)
 {
     return board_int[row][col] == FIELD_BOMB;
 }
 
-UI count_bombs_around_field(int row, int col)
+UI Sapper::count_bombs_around_field(int row, int col)
 {
     // counts bombs around XY field
     int bombs = 0;
@@ -190,12 +204,12 @@ UI count_bombs_around_field(int row, int col)
     return bombs;
 }
 
-inline bool is_coord_inside_board(UI coord)
+inline bool Sapper::is_coord_inside_board(UI coord)
 {
     return (coord >= 0 && coord < BOARD_SIZE);
 }
 
-void update_field(UI row, UI col)
+void Sapper::update_field(UI row, UI col)
 {
     if(shown[row][col] == FIELD_HIDDEN)
         board[row][col] = 'X';
@@ -210,7 +224,7 @@ void update_field(UI row, UI col)
         board[row][col] = to_string(board_int[row][col]);
 }
 
-void update_board()
+void Sapper::update_board()
 {
     // update all fields of formal board
     for(UI row = 0; row < BOARD_SIZE; row++)
@@ -218,7 +232,7 @@ void update_board()
             update_field(row, col);
 }
 
-void mark_field(UI row, UI col)
+void Sapper::mark_field(UI row, UI col)
 {
     if(shown[row][col] == FIELD_HIDDEN && flags < BOMBS_AMOUNT)
     {
@@ -234,7 +248,7 @@ void mark_field(UI row, UI col)
     }
 }
 
-void do_action(string action, UI row, UI col)
+void Sapper::do_action(string action, UI row, UI col)
 {
     if(action == "mark")
         mark_field(row, col);
@@ -247,13 +261,13 @@ void do_action(string action, UI row, UI col)
     else if(action == "save_game")
     {
         save_progress_to_file();
-        cout << loc("\n\nSaved. [Press any button]", language);
+        cout << translator.loc("\n\nSaved. [Press any button]");
         getch();
         exit(0);
     }
 }
 
-val_input validate_input(string act, string rowp, string colp)
+val_input Sapper::validate_input(string act, string rowp, string colp)
 {
     val_input validated;
     int rown = BOARD_SIZE + 1, coln = BOARD_SIZE +1;
@@ -272,38 +286,38 @@ val_input validate_input(string act, string rowp, string colp)
     return validated;
 }
 
-void continue_or_end()
+void Sapper::continue_or_end()
 {
     string answer;
     while(answer != "yes" && answer != "no")
     {
         cout<<">";
         cin>>answer;
-        answer = to_en(answer);
+        answer = translator.to_en(answer);
     }
     if(answer == "no")
     {
-        cout << loc("Ok, goodbye! :) [press any button]", language);
+        cout << translator.loc("Ok, goodbye! :) [press any button]");
         getch();
         exit(0);
     }
-    cout<< loc("Here we go! [press any button]", language);
+    cout<< translator.loc("Here we go! [press any button]");
     init_game();
     getch();
     print_board();
 }
 
-void finish_game(bool lose)
+void Sapper::finish_game(bool lose)
 {
     if(lose)
-        cout << loc("\n\nWhat a pity! You stepped on a bomb!\n", language);
+        cout << translator.loc("\n\nWhat a pity! You stepped on a bomb!\n");
     else
-        cout << loc("\n\nCongratulations! You marked all bombs correctly and saved many human beings!\n", language);
-    cout<< loc("Would you like to play once again? [yes/no]\n", language);
+        cout << translator.loc("\n\nCongratulations! You marked all bombs correctly and saved many human beings!\n");
+    cout<< translator.loc("Would you like to play once again? [yes/no]\n");
     continue_or_end();
 }
 
-string ask_about_prefered_language()
+string UserInteractor::ask_about_prefered_language()
 {
     string selected;
     while(selected != "en" && selected != "EN" && selected != "PL" && selected != "pl" &&
@@ -319,95 +333,86 @@ string ask_about_prefered_language()
     return "EN";
 }
 
-void specify_settings()
+void UserInteractor::specify_settings()
 {
     specify_board_size();
     specify_bombs_amount();
     specify_zeroes_shown();
 }
 
-void specify_board_size()
+void UserInteractor::specify_board_size()
 {
     int input_int = 0;
     while(input_int > 99 || input_int < 1)
     {
-        cout << loc("\nSpecify the size of the board (1 to 99)\n>", language);
+        cout << translator.loc("\nSpecify the size of the board (1 to 99)\n>");
         string input;
         cin>>input;
         if(to_int(input_int, input) == false || (input_int > 99 || input_int < 1))
-            cout << loc("\nInvalid value!", language);
+            cout << translator.loc("\nInvalid value!");
     }
     BOARD_SIZE = input_int;
 }
 
-void specify_bombs_amount()
+void UserInteractor::specify_bombs_amount()
 {
     int input_int = 0;
     while(input_int > BOARD_SIZE*BOARD_SIZE || input_int < 1)
     {
-        cout << loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>", language);
+        cout << translator.loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>");
         string input;
         cin>>input;
         if(to_int(input_int, input) == false || (input_int > 99 || input_int < 1))
-            cout << loc("\nInvalid value!", language);
+            cout << translator.loc("\nInvalid value!");
     }
     BOMBS_AMOUNT = input_int;
 }
 
-void specify_zeroes_shown()
+void UserInteractor::specify_zeroes_shown()
 {
     string input;
     while(input != "true" && input != "false")
     {
-        cout << loc("\nSpecify if the zeroes will be shown since the game begin: [true/false]\n>", language);
+        cout << translator.loc("\nSpecify if the zeroes will be shown since the game begin: [true/false]\n>");
         cin>>input;
-        input = to_en(input);
+        input = translator.to_en(input);
         if(input != "true" && input != "false")
-            cout << loc("\nInvalid value!", language);
+            cout << translator.loc("\nInvalid value!");
     }
     SHOW_ZEROES = ( (input == "true") ? (true) : (false) );
 }
 
-void start_new_game_or_continue_saved_proggress()
+void Sapper::start_new_game_or_continue_saved_proggress()
 {
     string game_mode = "";
     while(game_mode != "1" && game_mode != "2")
     {
-        cout << loc("\nSelect game mode:\n1.Start new game\n2.Continue saved game\n>", language);
+        cout << translator.loc("\nSelect game mode:\n1.Start new game\n2.Continue saved game\n>");
         cin>>game_mode;
     }
     if(game_mode == "1")
     {
-        specify_settings();
+        user_interactor.specify_settings();
         init_game();
     }
     if(game_mode == "2")
         if(continue_saved_game_from_file() == false)
         {
-            cout << loc("\nError! No saved progress available. [Press any botton to close game]", language);
+            cout << translator.loc("\nError! No saved progress available. [Press any botton to close game]");
             getch();
             exit(0);
         }
 }
 
-void start_game()
-{
-    language = ask_about_prefered_language();
-    start_new_game_or_continue_saved_proggress();
-    update_board();
-    print_board();
-    main_game();
-}
-
-void main_game()
+void Sapper::main_game()
 {
     string action, row, col;
     while(true)
     {
-        cout << loc("Flags left: ", language) << BOMBS_AMOUNT - flags << "\n";
-        cout << loc("Tell me what to do! (action[show/mark/save_game], row[1-9] , col[1-9]):\n>", language);
+        cout << translator.loc("Flags left: ") << BOMBS_AMOUNT - flags << "\n";
+        cout << translator.loc("Tell me what to do! (action[show/mark/save_game], row[1-9] , col[1-9]):\n>");
         cin>>action>>row>>col;
-        val_input vi = validate_input(to_en(action), row, col);
+        val_input vi = validate_input(translator.to_en(action), row, col);
         do_action(vi.action, vi.row, vi.col);
         print_board();
         if((flags == BOMBS_AMOUNT && hidden_fields_amount == BOMBS_AMOUNT) || lose)
@@ -417,6 +422,8 @@ void main_game()
 
 int main()
 {
-    start_game();
+    Sapper saper;
+    saper.run();
     return 0;
 }
+
