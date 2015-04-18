@@ -1,27 +1,62 @@
-using namespace std;
-
-string translate(string message, string language, ...);
-string PL(string message);
-string EN(string message);
-string to_en(string message);
-string form(string message, ...);
-string loc(string message, string language, ...);
-
-string loc(string message, string language, ...)
+class Translator
 {
-    return translate(message, language);
+private:
+    std::string language;
+	std::string PL(std::string message);
+    std::string EN(std::string message);
+public:
+    std::string get_language();
+    void set_language(std::string lang);
+    std::string loc(std::string message);
+    std::string to_en(std::string message);
+    std::string translate(std::string message);
 }
 
-string translate(string message, string language, ...)
+std::string Translator::get_language()
 {
-    if(language == "PL")
-        return form(PL(message));
-    if(language == "EN")
-        return form(EN(message));
+    return this->language;
+}
+
+void Translator::set_language(std::string lang)
+{
+    this->language = lang;
+}
+
+std::string Translator::loc(std::string message)
+{
+    return translate(message);
+}
+
+std::string Translator::to_en(std::string message)
+{
+    if(message == "tak")
+        return "yes";
+    if(message == "nie")
+        return "no";
+    if(message == "prawda")
+        return "true";
+    if(message == "falsz")
+        return "false";
+    if(message == "pokaz")
+        return "show";
+    if(message == "oznacz")
+        return "mark";
+    if(message == "zapisz_gre")
+        return "save_game";
+    // default
     return message;
 }
 
-string PL(string message)
+std::string Translator::translate(std::string message)
+{
+    if(this->language == "PL")
+        return PL(message);
+    if(this->language == "EN")
+        return EN(message);
+    return message;
+}
+
+std::string Translator::PL(std::string message)
 {
     if(message == "Here we go! [press any button]")
         return "Zaczynajmy! [nacisnij dowolny przycisk]";
@@ -55,32 +90,7 @@ string PL(string message)
     return message;
 }
 
-string EN(string message)
+std::string Translator::EN(std::string message)
 {
-    return message;
-}
-
-string form(string message, ...)
-{
-    return message;
-}
-
-string to_en(string message)
-{
-    if(message == "tak")
-        return "yes";
-    if(message == "nie")
-        return "no";
-    if(message == "prawda")
-        return "true";
-    if(message == "falsz")
-        return "false";
-    if(message == "pokaz")
-        return "show";
-    if(message == "oznacz")
-        return "mark";
-    if(message == "zapisz_gre")
-        return "save_game";
-    // default
     return message;
 }
