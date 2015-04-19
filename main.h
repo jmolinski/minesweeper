@@ -5,20 +5,6 @@ using namespace std;
 
 typedef unsigned int UI;
 
-// settings
-const UI MAX_BOARD_SIZE = 100;
-UI BOARD_SIZE = 9; // board is a grid of x * x fields
-UI BOMBS_AMOUNT = 18; // number of bombs set on the board
-bool SHOW_ZEROES = true; // show all zero-valued fields
-// value will be set before geme starts
-string language;
-// special values of fields
-const UI FIELD_CLEAR = 0;
-const UI FIELD_BOMB = 9;
-const UI FIELD_MARKED = 10;
-const UI FIELD_SHOWN = 11;
-const UI FIELD_HIDDEN = 12;
-
 struct validated_input
 {
     string action;
@@ -36,14 +22,10 @@ struct unverified_input
 typedef validated_input val_input;
 
 // boards
+const UI MAX_BOARD_SIZE = 100;
 string board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]; // board that will be displayed to user
 UI board_int[MAX_BOARD_SIZE][MAX_BOARD_SIZE]; // board with actual fields' values
 UI shown[MAX_BOARD_SIZE][MAX_BOARD_SIZE]; // board with values: marked, hidden, shown for each field
-
-// some global variables... :(
-UI flags = 0;
-bool lose = false;
-UI hidden_fields_amount = BOARD_SIZE * BOARD_SIZE;
 
 // function index
 class UserInteractor
@@ -63,7 +45,7 @@ public:
     bool specify_zeroes_shown();
     string ask_about_prefered_language();
     void print_board();
-    val_input takeCommand();
+    val_input takeCommand(UI, UI);
     val_input validate_input(unverified_input unverified);
     bool is_coord_inside_board(UI coord);
     void setLanguage();
@@ -103,6 +85,21 @@ private:
     void main_game();
     bool is_field_a_bomb(UI row, UI col);
     void specify_settings();
+    bool continue_saved_game_from_file();
+    void save_progress_to_file();
+
+    static const UI FIELD_CLEAR = 0;
+    static const UI FIELD_BOMB = 9;
+    static const UI FIELD_MARKED = 10;
+    static const UI FIELD_SHOWN = 11;
+    static const UI FIELD_HIDDEN = 12;
+
+    UI BOARD_SIZE; // board is a grid of x * x fields
+    UI BOMBS_AMOUNT; // number of bombs set on the board
+    bool SHOW_ZEROES; // show all zero-valued fields
+    UI flags;
+    bool lose;
+    UI hidden_fields_amount;
 };
 
 bool to_int(int& val, string str_val);

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <time.h>
 #include <windows.h>
+#include <fstream>
 #include <cstdlib>
 #include <stdio.h>
 #include <conio.h>
@@ -23,10 +24,19 @@ bool to_int(int& val, string str_val)
     return true;
 }
 
+const UI Sapper::FIELD_CLEAR;
+const UI Sapper::FIELD_BOMB;
+const UI Sapper::FIELD_MARKED;
+const UI Sapper::FIELD_SHOWN;
+const UI Sapper::FIELD_HIDDEN;
+
 Sapper::Sapper()
 {
     user_interactor.setLanguage();
     start_new_game_or_continue_saved_proggress();
+    flags = 0;
+    lose = false;
+    hidden_fields_amount = BOARD_SIZE * BOARD_SIZE;
 }
 
 void Sapper::run()
@@ -100,7 +110,38 @@ void Sapper::init_game()
     set_fields_values();
     lose = false;
     flags = 0;
+    hidden_fields_amount = BOARD_SIZE * BOARD_SIZE;
     update_board();
+}
+
+bool Sapper::continue_saved_game_from_file()
+{
+    try
+    {
+        fstream saved_progress;
+        saved_progress.open("saved_progress.txt", ios::in);
+        saved_progress >> BOARD_SIZE >> BOMBS_AMOUNT >> SHOW_ZEROES >> hidden_fields_amount >> flags >> lose;
+        for(UI i = 0; i < BOARD_SIZE; i++)
+            for(UI j = 0; j < BOARD_SIZE; j++)
+                saved_progress >> board[i][j] >> board_int[i][j] >> shown[i][j];
+        saved_progress.close();
+    }
+    catch(...)
+    {
+        return false;
+    }
+    return true;
+}
+
+void Sapper::save_progress_to_file()
+{
+    fstream saved_progress("saved_progress.txt", ios::out);
+    saved_progress << BOARD_SIZE << "\n" << BOMBS_AMOUNT << "\n" << SHOW_ZEROES << "\n";
+    saved_progress << hidden_fields_amount << "\n" << flags << "\n" << lose << "\n";
+    for(UI i = 0; i < BOARD_SIZE; i++)
+        for(UI j = 0; j < BOARD_SIZE; j++)
+            saved_progress << board[i][j] << " " << board_int[i][j] << " " << shown[i][j] << "\n";
+    saved_progress.close();
 }
 
 inline bool Sapper::is_field_a_bomb(UI row, UI col)
@@ -233,7 +274,7 @@ void Sapper::main_game()
     string action, row, col;
     while(true)
     {
-        val_input input = user_interactor.takeCommand();
+        val_input input = user_interactor.takeCommand(BOMBS_AMOUNT, flags);
         do_action(input.action, input.row, input.col);
         user_interactor.print_board();
         if((flags == BOMBS_AMOUNT && hidden_fields_amount == BOMBS_AMOUNT) || lose)
@@ -415,10 +456,10 @@ void UserInteractor::print_board()
     print_board_lower_body();
 }
 
-val_input UserInteractor::takeCommand()
+val_input UserInteractor::takeCommand(UI bombs_amount, UI flags)
 {
     unverified_input ui;
-    cout << translator.loc("Flags left: ") << BOMBS_AMOUNT - flags << "\n";
+    cout << translator.loc("Flags left: ") << bombs_amount - flags << "\n";
     cout << translator.loc("Tell me what to do! (action[show/mark/save_game], row[1-9] , col[1-9]):\n>");
     cin>>ui.action>>ui.row>>ui.col;
     return validate_input(ui);
