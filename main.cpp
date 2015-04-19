@@ -34,9 +34,6 @@ Sapper::Sapper()
 {
     user_interactor.setLanguage();
     start_new_game_or_continue_saved_proggress();
-    flags = 0;
-    lose = false;
-    hidden_fields_amount = BOARD_SIZE * BOARD_SIZE;
 }
 
 void Sapper::run()
@@ -223,7 +220,6 @@ void Sapper::do_action(string action, UI row, UI col)
     {
         save_progress_to_file();
         user_interactor.gameSavedMessage();
-        getch();
         exit(0);
     }
 }
@@ -235,12 +231,10 @@ void Sapper::continue_or_end()
     if(answer == "no")
     {
         user_interactor.endGameMessage();
-        getch();
         exit(0);
     }
     user_interactor.continueGameMessage();
     init_game();
-    getch();
     user_interactor.print_board();
 }
 
@@ -264,7 +258,6 @@ void Sapper::start_new_game_or_continue_saved_proggress()
         if(continue_saved_game_from_file() == false)
         {
             user_interactor.noSavedProgressErrorMessage();
-            getch();
             exit(0);
         }
 }
@@ -488,16 +481,19 @@ val_input UserInteractor::validate_input(unverified_input unverified)
 void UserInteractor::noSavedProgressErrorMessage()
 {
     cout << translator.loc("\nError! No saved progress available. [Press any botton to close game]");
+    getch();
 }
 
 void UserInteractor::endGameMessage()
 {
     cout << translator.loc("Ok, goodbye! :) [press any button]");
+    getch();
 }
 
 void UserInteractor::continueGameMessage()
 {
     cout << translator.loc("Here we go! [press any button]");
+    getch();
 }
 
 void UserInteractor::playOnceAgainQuestionMessage()
@@ -518,6 +514,7 @@ inline bool UserInteractor::is_coord_inside_board(UI coord)
 void UserInteractor::gameSavedMessage()
 {
     cout << translator.loc("\n\nSaved. [Press any button]");
+    getch();
 }
 
 int main()
