@@ -1,3 +1,6 @@
+#ifndef TRANSLATIONS_H
+#define TRANSLATIONS_H
+
 class Translator
 {
 private:
@@ -94,3 +97,5 @@ std::string Translator::EN(std::string message)
 {
     return message;
 }
+
+#endif // TRANSLATIONS

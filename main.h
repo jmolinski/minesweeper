@@ -1,3 +1,6 @@
+#ifndef MAIN_H
+#define MAIN_H
+
 using namespace std;
 
 typedef unsigned int UI;
@@ -23,6 +26,13 @@ struct validated_input
     int col;
 };
 
+struct unverified_input
+{
+    string action;
+    string row;
+    string col;
+};
+
 typedef validated_input val_input;
 
 // boards
@@ -40,12 +50,31 @@ class UserInteractor
 {
 private:
     Translator translator;
+    string string_of_x_spaces(UI x);
+    void print_board_main_body();
+    void print_row(UI row);
+    void print_line_separating_rows();
+    void print_board_upper_body();
+    void print_board_lower_body();
 public:
-    void specify_settings();
-    void specify_board_size();
-    void specify_bombs_amount();
-    void specify_zeroes_shown();
+    UI BOARD_SIZE;
+    UI specify_board_size();
+    UI specify_bombs_amount();
+    bool specify_zeroes_shown();
     string ask_about_prefered_language();
+    void print_board();
+    val_input takeCommand();
+    val_input validate_input(unverified_input unverified);
+    bool is_coord_inside_board(UI coord);
+    void setLanguage();
+    void gameSavedMessage();
+    string continue_or_end_gameAnswer();
+    void endGameMessage();
+    void continueGameMessage();
+    void gameFinishedMessages(bool lose);
+    void playOnceAgainQuestionMessage();
+    void noSavedProgressErrorMessage();
+    string selectGameModeQuestion();
 };
 
 class Sapper
@@ -54,19 +83,11 @@ public:
     void run();
     Sapper();
 private:
-    Translator translator;
     UserInteractor user_interactor;
-
     void start_new_game_or_continue_saved_proggress();
     void update_board();
     void update_field(UI row, UI col);
     UI count_bombs_around_field(int row, int col);
-    void print_board();
-    void print_board_main_body();
-    void print_row(UI row);
-    void print_line_separating_rows();
-    void print_board_upper_body();
-    void print_board_lower_body();
     void init_game();
     void clear_boards();
     void clear_field(UI row, UI col);
@@ -79,9 +100,11 @@ private:
     void continue_or_end();
     bool is_coord_inside_board(UI coord);
     val_input validate_input(string act, string row, string col);
-    string string_of_x_spaces(UI x);
     void main_game();
     bool is_field_a_bomb(UI row, UI col);
+    void specify_settings();
 };
 
 bool to_int(int& val, string str_val);
+
+#endif // MAIN

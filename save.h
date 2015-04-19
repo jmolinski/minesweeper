@@ -1,3 +1,6 @@
+#ifndef SAVE_H
+#define SAVE_H
+
 #include <fstream>
 
 bool continue_saved_game_from_file()
@@ -29,3 +32,5 @@ void save_progress_to_file()
             saved_progress << board[i][j] << " " << board_int[i][j] << " " << shown[i][j] << "\n";
     saved_progress.close();
 }
+
+#endif // SAVE

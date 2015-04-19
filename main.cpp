@@ -25,96 +25,16 @@ bool to_int(int& val, string str_val)
 
 Sapper::Sapper()
 {
-    translator.set_language(user_interactor.ask_about_prefered_language());
+    user_interactor.setLanguage();
     start_new_game_or_continue_saved_proggress();
 }
 
 void Sapper::run()
 {
     update_board();
-    print_board();
+    user_interactor.print_board();
     main_game();
 }
-
-void Sapper::print_board_upper_body()
-{
-    printf("\n\n");
-    printf("                    ");
-    for(UI i = 0; i < BOARD_SIZE; i++)
-    {
-        string col = "%i  ";
-        col += [](int x)->string {return ((x>8)?(""):(" "));}(i);
-        printf(col.c_str(), i+1);
-    }
-    printf("\n                   ");
-    for(UI i = 0; i < BOARD_SIZE*4-1; i++)
-        printf("_");
-    printf("\n");
-}
-
-string Sapper::string_of_x_spaces(UI x)
-{
-    string spaces;
-    for(UI i = 0; i < x; i++)
-        spaces += ' ';
-    return spaces;
-}
-
-void Sapper::print_line_separating_rows()
-{
-    printf("|");
-    for(UI j = 0; j < BOARD_SIZE-1; j++)
-        printf("---+");
-    printf("---|\n");
-}
-
-void Sapper::print_row(UI row)
-{
-    printf(" | ");
-    for(UI col = 0; col < BOARD_SIZE; col++)
-        cout << board[row][col] << " | ";
-    printf("%i\n", row+1);
-}
-
-void Sapper::print_board_main_body()
-{
-    for(UI row = 0; row < BOARD_SIZE; row++)
-    {
-        string spaces = [](UI row_num)->string {return ((row_num>8)?(""):(" "));}(row);
-        spaces += "               %i";
-        printf(spaces.c_str(), row+1);
-        print_row(row);
-        spaces = string_of_x_spaces(spaces.length());
-        spaces += [](UI row_num)->string {return ((row_num>8)?(" "):(""));}(row);
-        printf(spaces.c_str());
-        if(row < BOARD_SIZE-1)
-            print_line_separating_rows();
-    }
-}
-
-void Sapper::print_board_lower_body()
-{
-    printf(" ");
-    for(UI i = 0; i < BOARD_SIZE*4-1; i++)
-        printf("-");
-    printf("\n                    ");
-    for(UI i = 0; i < BOARD_SIZE; i++)
-    {
-        string col = "%i  ";
-        col += [](int x)->string {return ((x<=8)?(" "):(""));}(i);
-        printf(col.c_str(), i+1);
-    }
-    printf("\n\n");
-}
-
-void Sapper::print_board()
-{
-    system("CLS");
-    print_board_upper_body();
-    print_board_main_body();
-    print_board_lower_body();
-}
-///////////////////////////////////////////////////////////////////////////////////////
 
 void Sapper::clear_field(UI row, UI col)
 {
@@ -261,32 +181,72 @@ void Sapper::do_action(string action, UI row, UI col)
     else if(action == "save_game")
     {
         save_progress_to_file();
-        cout << translator.loc("\n\nSaved. [Press any button]");
+        user_interactor.gameSavedMessage();
         getch();
         exit(0);
     }
 }
 
-val_input Sapper::validate_input(string act, string rowp, string colp)
+void Sapper::continue_or_end()
 {
-    val_input validated;
-    int rown = BOARD_SIZE + 1, coln = BOARD_SIZE +1;
-    try
+    user_interactor.playOnceAgainQuestionMessage();
+    string answer = user_interactor.continue_or_end_gameAnswer();
+    if(answer == "no")
     {
-        rown = stoi(rowp) - 1, coln = stoi(colp) - 1;
+        user_interactor.endGameMessage();
+        getch();
+        exit(0);
     }
-    catch(...)
-    {
-        // error when converting invalid value from
-        // string to int with stoi(), ignore
-    }
-    validated.action = ((act == "show" || act == "mark" || act == "save_game")?(act):("invalid"));
-    validated.row = ((is_coord_inside_board(rown))?(rown):(0));
-    validated.col = ((is_coord_inside_board(coln))?(coln):(0));
-    return validated;
+    user_interactor.continueGameMessage();
+    init_game();
+    getch();
+    user_interactor.print_board();
 }
 
-void Sapper::continue_or_end()
+void Sapper::specify_settings()
+{
+    BOARD_SIZE = user_interactor.specify_board_size();
+    user_interactor.BOARD_SIZE = BOARD_SIZE;
+    BOMBS_AMOUNT = user_interactor.specify_bombs_amount();
+    SHOW_ZEROES = user_interactor.specify_zeroes_shown();
+}
+
+void Sapper::start_new_game_or_continue_saved_proggress()
+{
+    string game_mode = user_interactor.selectGameModeQuestion();
+    if(game_mode == "new_game")
+    {
+        specify_settings();
+        init_game();
+    }
+    if(game_mode == "saved_progress")
+        if(continue_saved_game_from_file() == false)
+        {
+            user_interactor.noSavedProgressErrorMessage();
+            getch();
+            exit(0);
+        }
+}
+
+void Sapper::main_game()
+{
+    string action, row, col;
+    while(true)
+    {
+        val_input input = user_interactor.takeCommand();
+        do_action(input.action, input.row, input.col);
+        user_interactor.print_board();
+        if((flags == BOMBS_AMOUNT && hidden_fields_amount == BOMBS_AMOUNT) || lose)
+        {
+            user_interactor.gameFinishedMessages(lose);
+            continue_or_end();
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+string UserInteractor::continue_or_end_gameAnswer()
 {
     string answer;
     while(answer != "yes" && answer != "no")
@@ -295,26 +255,15 @@ void Sapper::continue_or_end()
         cin>>answer;
         answer = translator.to_en(answer);
     }
-    if(answer == "no")
-    {
-        cout << translator.loc("Ok, goodbye! :) [press any button]");
-        getch();
-        exit(0);
-    }
-    cout<< translator.loc("Here we go! [press any button]");
-    init_game();
-    getch();
-    print_board();
+    return answer;
 }
 
-void Sapper::finish_game(bool lose)
+void UserInteractor::gameFinishedMessages(bool lose)
 {
     if(lose)
         cout << translator.loc("\n\nWhat a pity! You stepped on a bomb!\n");
     else
         cout << translator.loc("\n\nCongratulations! You marked all bombs correctly and saved many human beings!\n");
-    cout<< translator.loc("Would you like to play once again? [yes/no]\n");
-    continue_or_end();
 }
 
 string UserInteractor::ask_about_prefered_language()
@@ -333,14 +282,7 @@ string UserInteractor::ask_about_prefered_language()
     return "EN";
 }
 
-void UserInteractor::specify_settings()
-{
-    specify_board_size();
-    specify_bombs_amount();
-    specify_zeroes_shown();
-}
-
-void UserInteractor::specify_board_size()
+UI UserInteractor::specify_board_size()
 {
     int input_int = 0;
     while(input_int > 99 || input_int < 1)
@@ -351,13 +293,14 @@ void UserInteractor::specify_board_size()
         if(to_int(input_int, input) == false || (input_int > 99 || input_int < 1))
             cout << translator.loc("\nInvalid value!");
     }
-    BOARD_SIZE = input_int;
+    return static_cast<UI>(input_int);
 }
 
-void UserInteractor::specify_bombs_amount()
+UI UserInteractor::specify_bombs_amount()
 {
     int input_int = 0;
-    while(input_int > BOARD_SIZE*BOARD_SIZE || input_int < 1)
+    int max_b = BOARD_SIZE*BOARD_SIZE;
+    while(input_int > max_b || input_int < 1)
     {
         cout << translator.loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>");
         string input;
@@ -365,10 +308,10 @@ void UserInteractor::specify_bombs_amount()
         if(to_int(input_int, input) == false || (input_int > 99 || input_int < 1))
             cout << translator.loc("\nInvalid value!");
     }
-    BOMBS_AMOUNT = input_int;
+    return static_cast<UI>(input_int);
 }
 
-void UserInteractor::specify_zeroes_shown()
+bool UserInteractor::specify_zeroes_shown()
 {
     string input;
     while(input != "true" && input != "false")
@@ -379,10 +322,10 @@ void UserInteractor::specify_zeroes_shown()
         if(input != "true" && input != "false")
             cout << translator.loc("\nInvalid value!");
     }
-    SHOW_ZEROES = ( (input == "true") ? (true) : (false) );
+    return ( (input == "true") ? (true) : (false) );
 }
 
-void Sapper::start_new_game_or_continue_saved_proggress()
+string UserInteractor::selectGameModeQuestion()
 {
     string game_mode = "";
     while(game_mode != "1" && game_mode != "2")
@@ -390,34 +333,150 @@ void Sapper::start_new_game_or_continue_saved_proggress()
         cout << translator.loc("\nSelect game mode:\n1.Start new game\n2.Continue saved game\n>");
         cin>>game_mode;
     }
-    if(game_mode == "1")
-    {
-        user_interactor.specify_settings();
-        init_game();
-    }
-    if(game_mode == "2")
-        if(continue_saved_game_from_file() == false)
-        {
-            cout << translator.loc("\nError! No saved progress available. [Press any botton to close game]");
-            getch();
-            exit(0);
-        }
+    return (game_mode == "1" ? "new_game" : "saved_progress");
 }
 
-void Sapper::main_game()
+void UserInteractor::print_board_upper_body()
 {
-    string action, row, col;
-    while(true)
+    printf("\n\n");
+    printf("                    ");
+    for(UI i = 0; i < this->BOARD_SIZE; i++)
     {
-        cout << translator.loc("Flags left: ") << BOMBS_AMOUNT - flags << "\n";
-        cout << translator.loc("Tell me what to do! (action[show/mark/save_game], row[1-9] , col[1-9]):\n>");
-        cin>>action>>row>>col;
-        val_input vi = validate_input(translator.to_en(action), row, col);
-        do_action(vi.action, vi.row, vi.col);
-        print_board();
-        if((flags == BOMBS_AMOUNT && hidden_fields_amount == BOMBS_AMOUNT) || lose)
-            finish_game(lose);
+        string col = "%i  ";
+        col += [](int x)->string {return ((x>8)?(""):(" "));}(i);
+        printf(col.c_str(), i+1);
     }
+    printf("\n                   ");
+    for(UI i = 0; i < this->BOARD_SIZE*4-1; i++)
+        printf("_");
+    printf("\n");
+}
+
+string UserInteractor::string_of_x_spaces(UI x)
+{
+    string spaces;
+    for(UI i = 0; i < x; i++)
+        spaces += ' ';
+    return spaces;
+}
+
+void UserInteractor::print_line_separating_rows()
+{
+    printf("|");
+    for(UI j = 0; j < this->BOARD_SIZE-1; j++)
+        printf("---+");
+    printf("---|\n");
+}
+
+void UserInteractor::print_row(UI row)
+{
+    printf(" | ");
+    for(UI col = 0; col < this->BOARD_SIZE; col++)
+        cout << board[row][col] << " | ";
+    printf("%i\n", row+1);
+}
+
+void UserInteractor::print_board_main_body()
+{
+    for(UI row = 0; row < this->BOARD_SIZE; row++)
+    {
+        string spaces = [](UI row_num)->string {return ((row_num>8)?(""):(" "));}(row);
+        spaces += "               %i";
+        printf(spaces.c_str(), row+1);
+        print_row(row);
+        spaces = string_of_x_spaces(spaces.length());
+        spaces += [](UI row_num)->string {return ((row_num>8)?(" "):(""));}(row);
+        printf(spaces.c_str());
+        if(row < this->BOARD_SIZE-1)
+            print_line_separating_rows();
+    }
+}
+
+void UserInteractor::print_board_lower_body()
+{
+    printf(" ");
+    for(UI i = 0; i < this->BOARD_SIZE*4-1; i++)
+        printf("-");
+    printf("\n                    ");
+    for(UI i = 0; i < this->BOARD_SIZE; i++)
+    {
+        string col = "%i  ";
+        col += [](int x)->string {return ((x<=8)?(" "):(""));}(i);
+        printf(col.c_str(), i+1);
+    }
+    printf("\n\n");
+}
+
+void UserInteractor::print_board()
+{
+    system("CLS");
+    print_board_upper_body();
+    print_board_main_body();
+    print_board_lower_body();
+}
+
+val_input UserInteractor::takeCommand()
+{
+    unverified_input ui;
+    cout << translator.loc("Flags left: ") << BOMBS_AMOUNT - flags << "\n";
+    cout << translator.loc("Tell me what to do! (action[show/mark/save_game], row[1-9] , col[1-9]):\n>");
+    cin>>ui.action>>ui.row>>ui.col;
+    return validate_input(ui);
+}
+
+val_input UserInteractor::validate_input(unverified_input unverified)
+{
+    val_input validated;
+    int rown = BOARD_SIZE + 1, coln = BOARD_SIZE +1;
+    unverified.action = translator.to_en(unverified.action);
+    try
+    {
+        rown = stoi(unverified.row) - 1, coln = stoi(unverified.col) - 1;
+    }
+    catch(...)
+    {
+        // error when converting invalid value from
+        // string to int with stoi(), ignore
+    }
+    validated.action = ((unverified.action == "show" || unverified.action == "mark" || unverified.action == "save_game")?(unverified.action):("invalid"));
+    validated.row = ((is_coord_inside_board(rown))?(rown):(this->BOARD_SIZE+1));
+    validated.col = ((is_coord_inside_board(coln))?(coln):(this->BOARD_SIZE+1));
+    return validated;
+}
+
+void UserInteractor::noSavedProgressErrorMessage()
+{
+    cout << translator.loc("\nError! No saved progress available. [Press any botton to close game]");
+}
+
+void UserInteractor::endGameMessage()
+{
+    cout << translator.loc("Ok, goodbye! :) [press any button]");
+}
+
+void UserInteractor::continueGameMessage()
+{
+    cout << translator.loc("Here we go! [press any button]");
+}
+
+void UserInteractor::playOnceAgainQuestionMessage()
+{
+    cout<< translator.loc("Would you like to play once again? [yes/no]\n");
+}
+
+void UserInteractor::setLanguage()
+{
+    translator.set_language(ask_about_prefered_language());
+}
+
+inline bool UserInteractor::is_coord_inside_board(UI coord)
+{
+    return (coord >= 0 && coord < BOARD_SIZE);
+}
+
+void UserInteractor::gameSavedMessage()
+{
+    cout << translator.loc("\n\nSaved. [Press any button]");
 }
 
 int main()
@@ -426,4 +485,3 @@ int main()
     saper.run();
     return 0;
 }
-
