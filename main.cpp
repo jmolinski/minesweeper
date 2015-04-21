@@ -8,7 +8,46 @@
 #include <string>
 #include "translations.h"
 #include "main.h"
-#include "save.h"
+
+inline char Sapper::int_to_char(int x)
+{
+    return (x+48);
+}
+
+inline UI Board::get_board_size()
+{
+    return this->board_size;
+}
+
+Board::Board(const UI board_size_arg)
+{
+    this->board_size = board_size_arg;
+
+    board_int = new UI*[board_size+1];
+    shown = new UI*[board_size+1];
+    board = new char*[board_size+1];
+
+    for(UI i = 0; i < board_size+1; i++)
+    {
+        board_int[i] = new UI[board_size+1];
+        shown[i] = new UI[board_size+1];
+        board[i] = new char[board_size+1];
+    }
+}
+
+Board::~Board()
+{
+    for(UI i = 0; i < board_size+1; i++)
+    {
+        delete[] board_int[i];
+        delete[] shown[i];
+        delete[] board[i];
+    }
+
+    delete[] board_int;
+    delete[] shown;
+    delete[] board;
+}
 
 bool to_int(int& val, string str_val)
 {
@@ -24,11 +63,11 @@ bool to_int(int& val, string str_val)
     return true;
 }
 
-const UI Sapper::FIELD_CLEAR;
-const UI Sapper::FIELD_BOMB;
-const UI Sapper::FIELD_MARKED;
-const UI Sapper::FIELD_SHOWN;
-const UI Sapper::FIELD_HIDDEN;
+const UI Board::FIELD_CLEAR;
+const UI Board::FIELD_BOMB;
+const UI Board::FIELD_MARKED;
+const UI Board::FIELD_SHOWN;
+const UI Board::FIELD_HIDDEN;
 
 Sapper::Sapper()
 {
@@ -43,18 +82,18 @@ void Sapper::run()
     main_game();
 }
 
-void Sapper::clear_field(UI row, UI col)
+void Board::clear_field(UI row, UI col)
 {
     board[row][col] = 'X';
     board_int[row][col] = 0;
     shown[row][col] = FIELD_HIDDEN;
 }
 
-void Sapper::clear_boards()
+void Board::clear_boards()
 {
     // set all fields to its default value
-    for(UI row = 0; row < BOARD_SIZE; row++)
-        for(UI col = 0; col < BOARD_SIZE; col++)
+    for(UI row = 0; row < board_size; row++)
+        for(UI col = 0; col < board_size; col++)
             clear_field(row, col);
 }
 
@@ -64,11 +103,11 @@ void Sapper::set_bombs_on_board()
     UI dec_bombs = 0;
     while(dec_bombs != BOMBS_AMOUNT)
     {
-        UI row = rand()%BOARD_SIZE;
-        UI col = rand()%BOARD_SIZE;
-        if(board_int[row][col] != FIELD_BOMB)
+        UI row = rand()%board_ -> get_board_size();
+        UI col = rand()%board_ -> get_board_size();
+        if(board_ -> board_int[row][col] != Board::FIELD_BOMB)
         {
-            board_int[row][col] = FIELD_BOMB;
+            board_ -> board_int[row][col] = Board::FIELD_BOMB;
             dec_bombs++;
         }
     }
@@ -76,13 +115,13 @@ void Sapper::set_bombs_on_board()
 
 void Sapper::set_field_value(UI row, UI col)
 {
-    if(board_int[row][col] != FIELD_BOMB)
+    if(board_ -> board_int[row][col] != Board::FIELD_BOMB)
     {
-        board_int[row][col] = count_bombs_around_field(row, col);
+        board_ -> board_int[row][col] = count_bombs_around_field(row, col);
         // if SHOW_ZEROES is true - show zero-valued fields
-        if(SHOW_ZEROES && board_int[row][col] == 0)
+        if(SHOW_ZEROES && board_ -> board_int[row][col] == 0)
         {
-            shown[row][col] = FIELD_SHOWN;
+            board_ -> shown[row][col] = Board::FIELD_SHOWN;
             --hidden_fields_amount;
         }
     }
@@ -91,8 +130,8 @@ void Sapper::set_field_value(UI row, UI col)
 void Sapper::set_fields_values()
 {
     // set value to each non-bomb field
-    for(UI row = 0; row < BOARD_SIZE; row++)
-        for(UI col = 0; col < BOARD_SIZE; col++)
+    for(UI row = 0; row < board_->get_board_size(); row++)
+        for(UI col = 0; col < board_->get_board_size(); col++)
             set_field_value(row, col);
 }
 
@@ -100,14 +139,14 @@ void Sapper::init_game()
 {
     srand(time(NULL));
     // set each field to its default value
-    clear_boards();
+    board_ -> clear_boards();
     set_bombs_on_board();
-    hidden_fields_amount = BOARD_SIZE * BOARD_SIZE;
+    hidden_fields_amount = board_->get_board_size() * board_->get_board_size();
     // set values of all non-bomb fields
     set_fields_values();
     lose = false;
     flags = 0;
-    hidden_fields_amount = BOARD_SIZE * BOARD_SIZE;
+    hidden_fields_amount = board_->get_board_size() * board_->get_board_size();
     update_board();
 }
 
@@ -115,12 +154,15 @@ bool Sapper::continue_saved_game_from_file()
 {
     try
     {
+        UI BOARD_SIZE;
         fstream saved_progress;
         saved_progress.open("saved_progress.txt", ios::in);
-        saved_progress >> BOARD_SIZE >> BOMBS_AMOUNT >> SHOW_ZEROES >> hidden_fields_amount >> flags >> lose;
+        saved_progress >> BOARD_SIZE;
+        board_ = new Board(BOARD_SIZE);
+        saved_progress >> BOMBS_AMOUNT >> SHOW_ZEROES >> hidden_fields_amount >> flags >> lose;
         for(UI i = 0; i < BOARD_SIZE; i++)
             for(UI j = 0; j < BOARD_SIZE; j++)
-                saved_progress >> board[i][j] >> board_int[i][j] >> shown[i][j];
+                saved_progress >> board_->board[i][j] >> board_->board_int[i][j] >> board_->shown[i][j];
         saved_progress.close();
     }
     catch(...)
@@ -133,17 +175,17 @@ bool Sapper::continue_saved_game_from_file()
 void Sapper::save_progress_to_file()
 {
     fstream saved_progress("saved_progress.txt", ios::out);
-    saved_progress << BOARD_SIZE << "\n" << BOMBS_AMOUNT << "\n" << SHOW_ZEROES << "\n";
+    saved_progress << board_->get_board_size() << "\n" << BOMBS_AMOUNT << "\n" << SHOW_ZEROES << "\n";
     saved_progress << hidden_fields_amount << "\n" << flags << "\n" << lose << "\n";
-    for(UI i = 0; i < BOARD_SIZE; i++)
-        for(UI j = 0; j < BOARD_SIZE; j++)
-            saved_progress << board[i][j] << " " << board_int[i][j] << " " << shown[i][j] << "\n";
+    for(UI i = 0; i < board_->get_board_size(); i++)
+        for(UI j = 0; j < board_->get_board_size(); j++)
+            saved_progress << board_->board[i][j] << " " << board_->board_int[i][j] << " " << board_->shown[i][j] << "\n";
     saved_progress.close();
 }
 
-inline bool Sapper::is_field_a_bomb(UI row, UI col)
+inline bool Board::is_field_a_bomb(UI row, UI col)
 {
-    return board_int[row][col] == FIELD_BOMB;
+    return board_int[row][col] == Board::FIELD_BOMB;
 }
 
 UI Sapper::count_bombs_around_field(int row, int col)
@@ -154,53 +196,53 @@ UI Sapper::count_bombs_around_field(int row, int col)
     int cols[3] = {col-1, col, col+1};
     for(int current_row: rows)
     {
-        if(is_coord_inside_board(current_row))
+        if(board_->is_coord_inside_board(current_row))
             for(int current_col: cols)
-                if(is_coord_inside_board(current_col) && is_field_a_bomb(current_row, current_col))
+                if(board_->is_coord_inside_board(current_col) && board_ -> is_field_a_bomb(current_row, current_col))
                     bombs++;
     }
     return bombs;
 }
 
-inline bool Sapper::is_coord_inside_board(UI coord)
+inline bool Board::is_coord_inside_board(UI coord)
 {
-    return (coord >= 0 && coord < BOARD_SIZE);
+    return (coord >= 0 && coord < board_size);
 }
 
 void Sapper::update_field(UI row, UI col)
 {
-    if(shown[row][col] == FIELD_HIDDEN)
-        board[row][col] = 'X';
-    else if(shown[row][col] == FIELD_MARKED)
-        board[row][col] = 'M';
-    else if(board_int[row][col] == FIELD_BOMB)
+    if(board_->shown[row][col] == Board::FIELD_HIDDEN)
+        board_->board[row][col] = 'X';
+    else if(board_->shown[row][col] == Board::FIELD_MARKED)
+        board_->board[row][col] = 'M';
+    else if(board_->board_int[row][col] == Board::FIELD_BOMB)
     {
-        board[row][col] = 'B';
+        board_->board[row][col] = 'B';
         lose = true;
     }
     else
-        board[row][col] = to_string(board_int[row][col]);
+        board_->board[row][col] = int_to_char(board_->board_int[row][col]);
 }
 
 void Sapper::update_board()
 {
     // update all fields of formal board
-    for(UI row = 0; row < BOARD_SIZE; row++)
-        for(UI col = 0; col < BOARD_SIZE; col++)
+    for(UI row = 0; row < board_->get_board_size(); row++)
+        for(UI col = 0; col < board_->get_board_size(); col++)
             update_field(row, col);
 }
 
 void Sapper::mark_field(UI row, UI col)
 {
-    if(shown[row][col] == FIELD_HIDDEN && flags < BOMBS_AMOUNT)
+    if(board_->shown[row][col] == Board::FIELD_HIDDEN && flags < BOMBS_AMOUNT)
     {
-        shown[row][col] = FIELD_MARKED;
+        board_->shown[row][col] = Board::FIELD_MARKED;
         update_field(row, col);
         flags++;
     }
-    else if(shown[row][col] == FIELD_MARKED)
+    else if(board_->shown[row][col] == Board::FIELD_MARKED)
     {
-        shown[row][col] = FIELD_HIDDEN;
+        board_->shown[row][col] = Board::FIELD_HIDDEN;
         update_field(row, col);
         flags--;
     }
@@ -210,9 +252,9 @@ void Sapper::do_action(string action, UI row, UI col)
 {
     if(action == "mark")
         mark_field(row, col);
-    else if(action == "show" && shown[row][col] == FIELD_HIDDEN)
+    else if(action == "show" && board_->shown[row][col] == Board::FIELD_HIDDEN)
     {
-        shown[row][col] = FIELD_SHOWN;
+        board_->shown[row][col] = Board::FIELD_SHOWN;
         update_field(row, col);
         --hidden_fields_amount;
     }
@@ -240,8 +282,8 @@ void Sapper::continue_or_end()
 
 void Sapper::specify_settings()
 {
-    BOARD_SIZE = user_interactor.specify_board_size();
-    user_interactor.BOARD_SIZE = BOARD_SIZE;
+    board_ = new Board(user_interactor.specify_board_size());
+    user_interactor.board_ = board_;
     BOMBS_AMOUNT = user_interactor.specify_bombs_amount();
     SHOW_ZEROES = user_interactor.specify_zeroes_shown();
 }
@@ -333,7 +375,7 @@ UI UserInteractor::specify_board_size()
 UI UserInteractor::specify_bombs_amount()
 {
     int input_int = 0;
-    int max_b = BOARD_SIZE*BOARD_SIZE;
+    int max_b = board_->get_board_size()*board_->get_board_size();
     while(input_int > max_b || input_int < 1)
     {
         cout << translator.loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>");
@@ -374,14 +416,14 @@ void UserInteractor::print_board_upper_body()
 {
     printf("\n\n");
     printf("                    ");
-    for(UI i = 0; i < this->BOARD_SIZE; i++)
+    for(UI i = 0; i < board_->get_board_size(); i++)
     {
         string col = "%i  ";
         col += [](int x)->string {return ((x>8)?(""):(" "));}(i);
         printf(col.c_str(), i+1);
     }
     printf("\n                   ");
-    for(UI i = 0; i < this->BOARD_SIZE*4-1; i++)
+    for(UI i = 0; i < board_->get_board_size()*4-1; i++)
         printf("_");
     printf("\n");
 }
@@ -397,7 +439,7 @@ string UserInteractor::string_of_x_spaces(UI x)
 void UserInteractor::print_line_separating_rows()
 {
     printf("|");
-    for(UI j = 0; j < this->BOARD_SIZE-1; j++)
+    for(UI j = 0; j < board_->get_board_size()-1; j++)
         printf("---+");
     printf("---|\n");
 }
@@ -405,14 +447,14 @@ void UserInteractor::print_line_separating_rows()
 void UserInteractor::print_row(UI row)
 {
     printf(" | ");
-    for(UI col = 0; col < this->BOARD_SIZE; col++)
-        cout << board[row][col] << " | ";
+    for(UI col = 0; col < board_->get_board_size(); col++)
+        cout << board_->board[row][col] << " | ";
     printf("%i\n", row+1);
 }
 
 void UserInteractor::print_board_main_body()
 {
-    for(UI row = 0; row < this->BOARD_SIZE; row++)
+    for(UI row = 0; row < board_->get_board_size(); row++)
     {
         string spaces = [](UI row_num)->string {return ((row_num>8)?(""):(" "));}(row);
         spaces += "               %i";
@@ -421,7 +463,7 @@ void UserInteractor::print_board_main_body()
         spaces = string_of_x_spaces(spaces.length());
         spaces += [](UI row_num)->string {return ((row_num>8)?(" "):(""));}(row);
         printf(spaces.c_str());
-        if(row < this->BOARD_SIZE-1)
+        if(row < board_->get_board_size()-1)
             print_line_separating_rows();
     }
 }
@@ -429,10 +471,10 @@ void UserInteractor::print_board_main_body()
 void UserInteractor::print_board_lower_body()
 {
     printf(" ");
-    for(UI i = 0; i < this->BOARD_SIZE*4-1; i++)
+    for(UI i = 0; i < board_->get_board_size()*4-1; i++)
         printf("-");
     printf("\n                    ");
-    for(UI i = 0; i < this->BOARD_SIZE; i++)
+    for(UI i = 0; i < board_->get_board_size(); i++)
     {
         string col = "%i  ";
         col += [](int x)->string {return ((x<=8)?(" "):(""));}(i);
@@ -461,7 +503,7 @@ val_input UserInteractor::takeCommand(UI bombs_amount, UI flags)
 val_input UserInteractor::validate_input(unverified_input unverified)
 {
     val_input validated;
-    int rown = BOARD_SIZE + 1, coln = BOARD_SIZE +1;
+    int rown = board_->get_board_size() + 1, coln = board_->get_board_size() +1;
     unverified.action = translator.to_en(unverified.action);
     try
     {
@@ -473,8 +515,8 @@ val_input UserInteractor::validate_input(unverified_input unverified)
         // string to int with stoi(), ignore
     }
     validated.action = ((unverified.action == "show" || unverified.action == "mark" || unverified.action == "save_game")?(unverified.action):("invalid"));
-    validated.row = ((is_coord_inside_board(rown))?(rown):(this->BOARD_SIZE+1));
-    validated.col = ((is_coord_inside_board(coln))?(coln):(this->BOARD_SIZE+1));
+    validated.row = ((board_->is_coord_inside_board(rown))?(rown):(board_->get_board_size()+1));
+    validated.col = ((board_->is_coord_inside_board(coln))?(coln):(board_->get_board_size()+1));
     return validated;
 }
 
@@ -504,11 +546,6 @@ void UserInteractor::playOnceAgainQuestionMessage()
 void UserInteractor::setLanguage()
 {
     translator.set_language(ask_about_prefered_language());
-}
-
-inline bool UserInteractor::is_coord_inside_board(UI coord)
-{
-    return (coord >= 0 && coord < BOARD_SIZE);
 }
 
 void UserInteractor::gameSavedMessage()
