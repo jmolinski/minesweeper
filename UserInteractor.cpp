@@ -4,41 +4,41 @@
 
 using namespace std;
 
-void UserInteractor::noSavedProgressErrorMessage()
+void UserInteractor::no_saved_progress_error_message()
 {
     cout << translator.loc("\nError! No saved progress available. [Press any botton to close game]");
     getch();
 }
 
-void UserInteractor::endGameMessage()
+void UserInteractor::end_game_message()
 {
     cout << translator.loc("Ok, goodbye! :) [press any button]");
     getch();
 }
 
-void UserInteractor::continueGameMessage()
+void UserInteractor::continue_game_message()
 {
     cout << translator.loc("Here we go! [press any button]");
     getch();
 }
 
-void UserInteractor::playOnceAgainQuestionMessage()
+void UserInteractor::play_once_again_question_message()
 {
     cout<< translator.loc("Would you like to play once again? [yes/no]\n");
 }
 
-void UserInteractor::setLanguage()
+void UserInteractor::set_language()
 {
     translator.set_language(ask_about_prefered_language());
 }
 
-void UserInteractor::gameSavedMessage()
+void UserInteractor::game_saved_message()
 {
     cout << translator.loc("\n\nSaved. [Press any button]");
     getch();
 }
 
-string UserInteractor::continue_or_end_gameAnswer()
+string UserInteractor::continue_or_end_game_answer()
 {
     string answer;
     while(answer != "yes" && answer != "no")
@@ -50,7 +50,7 @@ string UserInteractor::continue_or_end_gameAnswer()
     return answer;
 }
 
-void UserInteractor::gameFinishedMessages(bool lose)
+void UserInteractor::game_finished_messages(bool lose)
 {
     if(lose)
         cout << translator.loc("\n\nWhat a pity! You stepped on a bomb!\n");
@@ -117,7 +117,7 @@ bool UserInteractor::specify_zeroes_shown()
     return ( (input == "true") ? (true) : (false) );
 }
 
-string UserInteractor::selectGameModeQuestion()
+string UserInteractor::select_game_mode_question()
 {
     string game_mode = "";
     while(game_mode != "1" && game_mode != "2")
@@ -207,7 +207,7 @@ void UserInteractor::print_board()
     print_board_lower_body();
 }
 
-val_input UserInteractor::takeCommand(UI bombs_amount, UI flags)
+val_input UserInteractor::take_command(UI bombs_amount, UI flags)
 {
     unverified_input ui;
     cout << translator.loc("Flags left: ") << bombs_amount - flags << "\n";

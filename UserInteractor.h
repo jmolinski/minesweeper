@@ -38,17 +38,17 @@ public:
     bool specify_zeroes_shown();
     std::string ask_about_prefered_language();
     void print_board();
-    val_input takeCommand(UI, UI);
+    val_input take_command(UI, UI);
     val_input validate_input(unverified_input unverified);
-    void setLanguage();
-    void gameSavedMessage();
-    std::string continue_or_end_gameAnswer();
-    void endGameMessage();
-    void continueGameMessage();
-    void gameFinishedMessages(bool lose);
-    void playOnceAgainQuestionMessage();
-    void noSavedProgressErrorMessage();
-    std::string selectGameModeQuestion();
+    void set_language();
+    void game_saved_message();
+    std::string continue_or_end_game_answer();
+    void end_game_message();
+    void continue_game_message();
+    void game_finished_messages(bool lose);
+    void play_once_again_question_message();
+    void no_saved_progress_error_message();
+    std::string select_game_mode_question();
     bool to_int(int& val, std::string str_val);
 };
 

@@ -22,8 +22,6 @@ private:
     void mark_field(UI row, UI col);
     void finish_game(bool);
     void continue_or_end();
-    bool is_coord_inside_board(UI coord);
-    val_input validate_input(std::string act, std::string row, std::string col);
     void main_game();
     void specify_settings();
     bool continue_saved_game_from_file();
@@ -34,8 +32,8 @@ private:
     UserInteractor user_interactor;
 
     //UI BOARD_SIZE; // board is a grid of x * x fields
-    UI BOMBS_AMOUNT; // number of bombs set on the board
-    bool SHOW_ZEROES; // show all zero-valued fields
+    UI bombs_amount; // number of bombs set on the board
+    bool show_zeros; // show all zero-valued fields
     UI flags;
     bool lose;
     UI hidden_fields_amount;
