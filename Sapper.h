@@ -1,6 +1,9 @@
 #ifndef SAPPER_H
 #define SAPPER_H
 
+#include "Board.h"
+#include "UserInteractor.h"
+
 class Sapper
 {
 public:
@@ -15,12 +18,12 @@ private:
     void set_bombs_on_board();
     void set_fields_values();
     void set_field_value(UI row, UI col);
-    void do_action(string action, UI row, UI col);
+    void do_action(std::string action, UI row, UI col);
     void mark_field(UI row, UI col);
     void finish_game(bool);
     void continue_or_end();
     bool is_coord_inside_board(UI coord);
-    val_input validate_input(string act, string row, string col);
+    val_input validate_input(std::string act, std::string row, std::string col);
     void main_game();
     void specify_settings();
     bool continue_saved_game_from_file();

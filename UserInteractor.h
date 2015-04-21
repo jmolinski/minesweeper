@@ -1,6 +1,26 @@
 #ifndef USERINTERACTOR_H
 #define USERINTERACTOR_H
 
+#include "Translator.h"
+#include "Board.h"
+
+struct validated_input
+{
+    std::string action;
+    int row;
+    int col;
+};
+
+struct unverified_input
+{
+    std::string action;
+    std::string row;
+    std::string col;
+};
+
+typedef validated_input val_input;
+typedef unsigned int UI;
+
 class UserInteractor
 {
 private:
@@ -29,6 +49,7 @@ public:
     void playOnceAgainQuestionMessage();
     void noSavedProgressErrorMessage();
     std::string selectGameModeQuestion();
+    bool to_int(int& val, std::string str_val);
 };
 
 #endif // USERINTERACTOR_H

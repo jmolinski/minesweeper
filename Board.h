@@ -1,6 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+typedef unsigned int UI;
+
 class Board
 {
     UI board_size;
