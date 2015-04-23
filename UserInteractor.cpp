@@ -6,7 +6,7 @@ using namespace std;
 
 void UserInteractor::no_saved_progress_error_message()
 {
-    cout << translator.loc("\nError! No saved progress available. [Press any botton to close game]");
+    cout << "\n" << translator.loc("\nError! No saved progress available. [Press any botton to close game]") << "\n\n";
     getch();
 }
 
@@ -18,7 +18,7 @@ void UserInteractor::end_game_message()
 
 void UserInteractor::continue_game_message()
 {
-    cout << translator.loc("Here we go! [press any button]");
+    cout << translator.loc("Here we go! [press any button]") << "\n";
     getch();
 }
 
