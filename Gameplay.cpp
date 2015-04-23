@@ -27,7 +27,7 @@ void Gameplay::setup()
     this->user_interface->set_language();
     start_new_game_or_continue_saved_proggress();
     this->user_interface->board_ = board;
-    sapper->set_board(board);
+    this->sapper->set_board(board);
 }
 
 void Gameplay::start_new_game_or_continue_saved_proggress()
@@ -37,6 +37,7 @@ void Gameplay::start_new_game_or_continue_saved_proggress()
     {
         specify_settings();
         init_game();
+        cout<<"dupaeu";
     }
     if(game_mode == "saved_progress")
         if(continue_saved_game_from_file() == false)
@@ -77,8 +78,6 @@ bool Gameplay::continue_or_end()
     delete board;
     specify_settings();
     init_game();
-    sapper->set_board(board);
-    user_interface->board_ = board;
     user_interface->print_board();
     return true;
 }
@@ -86,6 +85,8 @@ bool Gameplay::continue_or_end()
 void Gameplay::specify_settings()
 {
     board = new Board(user_interface->specify_board_size());
+    user_interface->board_ = board;
+    sapper->set_board(board);
     bombs_amount = user_interface->specify_bombs_amount();
     show_zeros = user_interface->specify_zeroes_shown();
 }

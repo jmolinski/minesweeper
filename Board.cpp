@@ -45,7 +45,6 @@ Board::~Board()
     delete[] board;
 }
 
-const UI Board::FIELD_CLEAR;
 const UI Board::FIELD_BOMB;
 const UI Board::FIELD_MARKED;
 const UI Board::FIELD_SHOWN;

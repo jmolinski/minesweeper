@@ -66,8 +66,8 @@ std::string Translator::PL(std::string message)
         return "\nWybierz sposob gry:\n1.Zacznij nowa gre\n2.Kontynuuj zapisana gre\n>";
     if(message == "\nSpecify the size of the board (1 to 99)\n>")
         return "\nPodaj rozmiar planszy (od 1 do 99)\n>";
-    if(message == "\nError! No saved progress available. [Press any botton to close game]")
-        return "\nBlad! Brak zapisanego postepu gry. [Nacisnij dowolny przycisk aby zakonczyc gre]";
+    if(message == "\nError! No saved progress available. [Press any botton to continue]")
+        return "\nBlad! Brak zapisanego postepu gry. [Nacisnij dowolny przycisk aby kontynuowac]";
     if(message == "\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>")
         return "\nPodaj ilosc bomb rozmieszonych na planszy (od 1 do kwadratu wielkosci planszy)\n>";
     if(message == "\nSpecify if the zeroes will be shown since the game begin: [true/false]\n>")

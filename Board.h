@@ -19,7 +19,6 @@ public:
     bool is_field_a_bomb(UI row, UI col);
     bool is_coord_inside_board(UI coord);
 
-    static const UI FIELD_CLEAR = 0;
     static const UI FIELD_BOMB = 9;
     static const UI FIELD_MARKED = 10;
     static const UI FIELD_SHOWN = 11;

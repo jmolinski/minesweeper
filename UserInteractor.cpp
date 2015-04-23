@@ -1,25 +1,27 @@
 #include <iostream>
-#include "conio.h"
 #include "UserInteractor.h"
 
 using namespace std;
 
 void UserInteractor::no_saved_progress_error_message()
 {
-    cout << "\n" << translator.loc("\nError! No saved progress available. [Press any botton to close game]") << "\n\n";
-    getch();
+    cout << "\n" << translator.loc("\nError! No saved progress available. [Press any botton to continue]") << "\n\n";
+    cin.sync();
+    cin.get();
 }
 
 void UserInteractor::end_game_message()
 {
     cout << translator.loc("Ok, goodbye! :) [press any button]");
-    getch();
+    cin.sync();
+    cin.get();
 }
 
 void UserInteractor::continue_game_message()
 {
     cout << translator.loc("Here we go! [press any button]") << "\n";
-    getch();
+    cin.sync();
+    cin.get();
 }
 
 void UserInteractor::play_once_again_question_message()
@@ -35,7 +37,8 @@ void UserInteractor::set_language()
 void UserInteractor::game_saved_message()
 {
     cout << translator.loc("\n\nSaved. [Press any button]");
-    getch();
+    cin.sync();
+    cin.get();
 }
 
 string UserInteractor::continue_or_end_game_answer()
@@ -97,7 +100,7 @@ UI UserInteractor::specify_bombs_amount()
         cout << translator.loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>");
         string input;
         cin>>input;
-        if(to_int(input_int, input) == false || (input_int > 99 || input_int < 1))
+        if(to_int(input_int, input) == false || (input_int > max_b || input_int < 1))
             cout << translator.loc("\nInvalid value!");
     }
     return static_cast<UI>(input_int);
@@ -146,10 +149,7 @@ void UserInteractor::print_board_upper_body()
 
 string UserInteractor::string_of_x_spaces(UI x)
 {
-    string spaces;
-    for(UI i = 0; i < x; i++)
-        spaces += ' ';
-    return spaces;
+    return string(x, ' ');
 }
 
 void UserInteractor::print_line_separating_rows()
