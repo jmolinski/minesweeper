@@ -2,7 +2,6 @@
 #include <ctime>
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
 
 using namespace std;
 
@@ -37,7 +36,6 @@ void Gameplay::start_new_game_or_continue_saved_proggress()
     {
         specify_settings();
         init_game();
-        cout<<"dupaeu";
     }
     if(game_mode == "saved_progress")
         if(continue_saved_game_from_file() == false)
