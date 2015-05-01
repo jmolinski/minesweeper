@@ -1,18 +1,11 @@
 #include "Board.h"
 
-void Board::clear_field(UI row, UI col)
-{
-    board[row][col].value = 'X';
-    board[row][col].val_int = 0;
-    board[row][col].shown = FIELD_HIDDEN;
-}
-
 void Board::clear_boards()
 {
     // set all fields to its default value
     for(UI row = 0; row < board_size; row++)
         for(UI col = 0; col < board_size; col++)
-            clear_field(row, col);
+            board[row][col].clear();
 }
 
 Board::Board(const UI board_size_arg)
@@ -32,19 +25,9 @@ Board::~Board()
     delete[] board;
 }
 
-const UI Board::FIELD_BOMB;
-const UI Board::FIELD_MARKED;
-const UI Board::FIELD_SHOWN;
-const UI Board::FIELD_HIDDEN;
-
 bool Board::is_coord_inside_board(UI coord)
 {
     return (coord >= 0 && coord < board_size);
-}
-
-bool Board::is_field_a_bomb(UI row, UI col)
-{
-    return board[row][col].val_int == Board::FIELD_BOMB;
 }
 
 UI Board::get_board_size()
@@ -52,45 +35,21 @@ UI Board::get_board_size()
     return this->board_size;
 }
 
+UI Board::get_bombs_amount()
+{
+    return this->bombs_amount;
+}
+
+UI Board::set_bombs_amount(UI bombs_amount_arg)
+{
+    this->bombs_amount = bombs_amount_arg;
+}
+
 void Board::update_board(bool& lose)
 {
     for(UI row = 0; row < board_size; row++)
         for(UI col = 0; col < board_size; col++)
-            update_field(row, col, lose);
-}
-
-void Board::update_field(UI row, UI col, bool& lose)
-{
-    if(board[row][col].shown == Board::FIELD_HIDDEN)
-        board[row][col].value = 'X';
-    else if(board[row][col].shown == Board::FIELD_MARKED)
-        board[row][col].value = 'M';
-    else if(board[row][col].val_int == Board::FIELD_BOMB)
-    {
-        board[row][col].value = 'B';
-        lose = true;
-    }
-    else
-        board[row][col].value = int_to_char(board[row][col].val_int);
-}
-
-inline char Board::int_to_char(int x)
-{
-    return (x+48);
-}
-
-void Board::mark_field(UI row, UI col, UI& flags, const UI bombs_amount, bool& lose)
-{
-    if(board[row][col].shown == Board::FIELD_HIDDEN && flags < bombs_amount)
-    {
-        board[row][col].shown = Board::FIELD_MARKED;
-        flags++;
-    }
-    else if(board[row][col].shown == Board::FIELD_MARKED)
-    {
-        board[row][col].shown = Board::FIELD_HIDDEN;
-        flags--;
-    }
+            board[row][col].update(lose);
 }
 
 UI Board::count_bombs_around_field(int row, int col)
@@ -103,8 +62,20 @@ UI Board::count_bombs_around_field(int row, int col)
     {
         if(is_coord_inside_board(current_row))
             for(int current_col: cols)
-                if(is_coord_inside_board(current_col) && is_field_a_bomb(current_row, current_col))
+                if(is_coord_inside_board(current_col) && board[current_row][current_col].is_a_bomb())
                     bombs++;
     }
     return bombs;
+}
+
+UI Board::get_hidden_fields_amount()
+{
+    UI hidden_fields_amount = 0;
+
+    for(UI row = 0; row < board_size; row++)
+        for(UI col = 0; col < board_size; col++)
+            if(board[row][col].is_hidden())
+                hidden_fields_amount++;
+
+    return hidden_fields_amount;
 }

@@ -7,8 +7,8 @@
 class GameplaySaver
 {
 public:
-    void save(Board* board, bool show_zeros, UI flags, bool lose, UI hidden_fields_amount);
-    bool load(Board* board, bool& show_zeros, UI& flags, bool& lose, UI& hidden_fields_amount);
+    void save(Board* board, bool show_zeros, UI flags, bool lose);
+    bool load(Board* board, bool& show_zeros, UI& flags, bool& lose);
 };
 
 #endif // GAMEPLAYSAVER_H

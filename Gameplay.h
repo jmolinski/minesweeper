@@ -25,7 +25,6 @@ private:
     bool show_zeros; // show all zero-valued fields
     UI flags;
     bool lose;
-    UI hidden_fields_amount;
 };
 
 #endif // GAMEPLAY_H

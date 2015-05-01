@@ -40,7 +40,7 @@ void Gameplay::start_new_game_or_continue_saved_proggress()
     if(game_mode == "saved_progress")
     {
         GameplaySaver* GS = new GameplaySaver;
-        if(GS->load(board, show_zeros, flags, lose, hidden_fields_amount) == false)
+        if(GS->load(board, show_zeros, flags, lose) == false)
         {
             user_interface->no_saved_progress_error_message();
             specify_settings();
@@ -55,10 +55,10 @@ void Gameplay::main_game()
     string action, row, col;
     while(true)
     {
-        validated_input input = user_interface->take_command(board->bombs_amount, flags);
+        validated_input input = user_interface->take_command(board->get_bombs_amount(), flags);
         do_action(input.action, input.row, input.col);
         user_interface->print_board();
-        if((flags == board->bombs_amount && hidden_fields_amount == board->bombs_amount) || lose)
+        if((flags == board->get_bombs_amount() && board->get_hidden_fields_amount() == 0) || lose)
         {
             user_interface->game_finished_message(lose);
             if(continue_or_end() == false)
@@ -89,7 +89,7 @@ void Gameplay::specify_settings()
     board = new Board(user_interface->specify_board_size());
     user_interface->board = board;
     sapper->set_board(board);
-    board->bombs_amount = user_interface->specify_bombs_amount();
+    board->set_bombs_amount(user_interface->specify_bombs_amount());
     show_zeros = user_interface->specify_zeros_shown();
 }
 
@@ -98,10 +98,9 @@ void Gameplay::init_game()
     srand(time(NULL));
     // set each field to its default value
     board -> clear_boards();
-    sapper -> set_bombs_on_board(board->bombs_amount);
+    sapper -> set_bombs_on_board(board->get_bombs_amount());
     // set values of all non-bomb fields
-    hidden_fields_amount = board->get_board_size() * board->get_board_size();
-    sapper->set_fields_values(show_zeros, hidden_fields_amount);
+    sapper->set_fields_values(show_zeros);
     lose = false;
     flags = 0;
     board->update_board(lose);
@@ -110,18 +109,15 @@ void Gameplay::init_game()
 void Gameplay::do_action(string action, UI row, UI col)
 {
     if(action == "mark")
-        board->mark_field(row, col, flags, board->bombs_amount, lose);
-    else if(action == "show" && board->board[row][col].shown == Board::FIELD_HIDDEN)
-    {
-        board->board[row][col].shown = Board::FIELD_SHOWN;
-        --hidden_fields_amount;
-    }
+        board->board[row][col].mark(flags, board->get_bombs_amount(), lose);
+    else if(action == "show")
+        board->board[row][col].reveal();
     else if(action == "save_game")
     {
         GameplaySaver* GS = new GameplaySaver;
-        GS->save(board, show_zeros, flags, lose, hidden_fields_amount);
+        GS->save(board, show_zeros, flags, lose);
         delete GS;
         user_interface->game_saved_message();
     }
-    board->update_field(row, col, lose);
+    board->board[row][col].update(lose);
 }
