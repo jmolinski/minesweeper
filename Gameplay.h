@@ -2,6 +2,7 @@
 #define GAMEPLAY_H
 
 #include "Sapper.h"
+#include "GameplaySaver.h"
 
 class Gameplay
 {
@@ -11,7 +12,6 @@ public:
 private:
     void setup();
     void start_new_game_or_continue_saved_proggress();
-    void save_progress_to_file();
     bool continue_saved_game_from_file();
     void main_game();
     void specify_settings();

@@ -38,12 +38,16 @@ void Gameplay::start_new_game_or_continue_saved_proggress()
         init_game();
     }
     if(game_mode == "saved_progress")
-        if(continue_saved_game_from_file() == false)
+    {
+        GameplaySaver* GS = new GameplaySaver;
+        if(GS->continue_saved_game_from_file(board, bombs_amount, show_zeros, flags, lose, hidden_fields_amount) == false)
         {
             user_interface->no_saved_progress_error_message();
             specify_settings();
             init_game();
         }
+        delete GS;
+    }
 }
 
 void Gameplay::main_game()
@@ -114,36 +118,10 @@ void Gameplay::do_action(string action, UI row, UI col)
     }
     else if(action == "save_game")
     {
-        save_progress_to_file();
+        GameplaySaver* GS = new GameplaySaver;
+        GS->save_progress_to_file(board, bombs_amount, show_zeros, flags, lose, hidden_fields_amount);
+        delete GS;
         user_interface->game_saved_message();
     }
     sapper->update_field(row, col, lose);
-}
-
-bool Gameplay::continue_saved_game_from_file()
-{
-    UI board_size;
-    fstream saved_progress;
-    saved_progress.open("saved_progress.txt", ios::in);
-    if(saved_progress.good() == false)
-        return false;
-    saved_progress >> board_size;
-    board = new Board(board_size);
-    saved_progress >> bombs_amount >> show_zeros >> hidden_fields_amount >> flags >> lose;
-    for(UI i = 0; i < board_size; i++)
-        for(UI j = 0; j < board_size; j++)
-            saved_progress >> board->board[i][j] >> board->board_int[i][j] >> board->shown[i][j];
-    saved_progress.close();
-    return true;
-}
-
-void Gameplay::save_progress_to_file()
-{
-    fstream saved_progress("saved_progress.txt", ios::out);
-    saved_progress << board->get_board_size() << "\n" << bombs_amount << "\n" << show_zeros << "\n";
-    saved_progress << hidden_fields_amount << "\n" << flags << "\n" << lose << "\n";
-    for(UI i = 0; i < board->get_board_size(); i++)
-        for(UI j = 0; j < board->get_board_size(); j++)
-            saved_progress << board->board[i][j] << " " << board->board_int[i][j] << " " << board->shown[i][j] << "\n";
-    saved_progress.close();
 }
