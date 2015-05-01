@@ -7,8 +7,8 @@
 class GameplaySaver
 {
 public:
-    void save_progress_to_file(Board* board, UI bombs_amount, bool show_zeros, UI flags, bool lose, UI hidden_fields_amount);
-    bool continue_saved_game_from_file(Board* board, UI& bombs_amount, bool& show_zeros, UI& flags, bool& lose, UI& hidden_fields_amount);
+    void save(Board* board, bool show_zeros, UI flags, bool lose, UI hidden_fields_amount);
+    bool load(Board* board, bool& show_zeros, UI& flags, bool& lose, UI& hidden_fields_amount);
 };
 
 #endif // GAMEPLAYSAVER_H

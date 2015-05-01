@@ -12,7 +12,6 @@ public:
 private:
     void setup();
     void start_new_game_or_continue_saved_proggress();
-    bool continue_saved_game_from_file();
     void main_game();
     void specify_settings();
     void init_game();
@@ -23,7 +22,6 @@ private:
     Board* board;
     UserInteractor* user_interface;
 
-    UI bombs_amount; // number of bombs set on the board
     bool show_zeros; // show all zero-valued fields
     UI flags;
     bool lose;
