@@ -24,14 +24,9 @@ void UserInteractor::continue_game_message()
     cin.get();
 }
 
-void UserInteractor::play_once_again_question_message()
+void UserInteractor::play_once_again_message()
 {
     cout<< translator.loc("Would you like to play once again? [yes/no]\n");
-}
-
-void UserInteractor::set_language()
-{
-    translator.set_language(ask_about_prefered_language());
 }
 
 void UserInteractor::game_saved_message()
@@ -41,7 +36,7 @@ void UserInteractor::game_saved_message()
     cin.get();
 }
 
-string UserInteractor::continue_or_end_game_answer()
+string UserInteractor::continue_or_end_game_question()
 {
     string answer;
     while(answer != "yes" && answer != "no")
@@ -53,7 +48,7 @@ string UserInteractor::continue_or_end_game_answer()
     return answer;
 }
 
-void UserInteractor::game_finished_messages(bool lose)
+void UserInteractor::game_finished_message(bool lose)
 {
     if(lose)
         cout << translator.loc("\n\nWhat a pity! You stepped on a bomb!\n");
@@ -61,9 +56,9 @@ void UserInteractor::game_finished_messages(bool lose)
         cout << translator.loc("\n\nCongratulations! You marked all bombs correctly and saved many human beings!\n");
 }
 
-string UserInteractor::ask_about_prefered_language()
+void UserInteractor::specify_UI_language()
 {
-    string selected;
+    string selected, language;
     while(selected != "en" && selected != "EN" && selected != "PL" && selected != "pl" &&
             selected != "1" && selected != "2")
     {
@@ -71,10 +66,11 @@ string UserInteractor::ask_about_prefered_language()
         cin>>selected;
     }
     if(selected == "1" || selected == "EN" || selected == "en")
-        return "EN";
+        language = "EN";
     if(selected == "2" || selected == "PL" || selected == "pl")
-        return "PL";
-    return "EN";
+        language = "PL";
+    language = "EN";
+    this->translator.set_language(language);
 }
 
 UI UserInteractor::specify_board_size()
@@ -94,24 +90,24 @@ UI UserInteractor::specify_board_size()
 UI UserInteractor::specify_bombs_amount()
 {
     int input_int = 0;
-    int max_b = board_->get_board_size()*board_->get_board_size();
-    while(input_int > max_b || input_int < 1)
+    int max_bombs_limit = board_->get_board_size()*board_->get_board_size();
+    while(input_int > max_bombs_limit || input_int < 1)
     {
         cout << translator.loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>");
         string input;
         cin>>input;
-        if(to_int(input_int, input) == false || (input_int > max_b || input_int < 1))
+        if(to_int(input_int, input) == false || input_int > max_bombs_limit || input_int < 1)
             cout << translator.loc("\nInvalid value!");
     }
     return static_cast<UI>(input_int);
 }
 
-bool UserInteractor::specify_zeroes_shown()
+bool UserInteractor::specify_zeros_shown()
 {
     string input;
     while(input != "true" && input != "false")
     {
-        cout << translator.loc("\nSpecify if the zeroes will be shown since the game begin: [true/false]\n>");
+        cout << translator.loc("\nSpecify if the zeros will be shown since the game begin: [true/false]\n>");
         cin>>input;
         input = translator.to_en(input);
         if(input != "true" && input != "false")
@@ -147,11 +143,6 @@ void UserInteractor::print_board_upper_body()
     printf("\n");
 }
 
-string UserInteractor::string_of_x_spaces(UI x)
-{
-    return string(x, ' ');
-}
-
 void UserInteractor::print_line_separating_rows()
 {
     printf("|");
@@ -176,7 +167,7 @@ void UserInteractor::print_board_main_body()
         spaces += "               %i";
         printf(spaces.c_str(), row+1);
         print_row(row);
-        spaces = string_of_x_spaces(spaces.length());
+        spaces = string(spaces.length(), ' ');
         spaces += [](UI row_num)->string {return ((row_num>8)?(" "):(""));}(row);
         printf(spaces.c_str());
         if(row < board_->get_board_size()-1)
@@ -207,18 +198,18 @@ void UserInteractor::print_board()
     print_board_lower_body();
 }
 
-val_input UserInteractor::take_command(UI bombs_amount, UI flags)
+validated_input UserInteractor::take_command(UI bombs_amount, UI flags)
 {
     unverified_input ui;
     cout << translator.loc("Flags left: ") << bombs_amount - flags << "\n";
-    cout << translator.loc("Tell me what to do! (action[show/mark/save_game], row[1-9] , col[1-9]):\n>");
+    cout << translator.loc("Tell me what to do! (action[show/mark/save_game], row, col):\n>");
     cin>>ui.action>>ui.row>>ui.col;
     return validate_input(ui);
 }
 
-val_input UserInteractor::validate_input(unverified_input unverified)
+validated_input UserInteractor::validate_input(unverified_input unverified)
 {
-    val_input validated;
+    validated_input validated;
     int rown = board_->get_board_size() + 1, coln = board_->get_board_size() +1;
     unverified.action = translator.to_en(unverified.action);
     try

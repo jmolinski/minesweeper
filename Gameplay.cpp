@@ -23,7 +23,7 @@ void Gameplay::setup()
     this->sapper = new Sapper;
     this->user_interface = new UserInteractor;
 
-    this->user_interface->set_language();
+    this->user_interface->specify_UI_language();
     start_new_game_or_continue_saved_proggress();
     this->user_interface->board_ = board;
     this->sapper->set_board(board);
@@ -51,12 +51,12 @@ void Gameplay::main_game()
     string action, row, col;
     while(true)
     {
-        val_input input = user_interface->take_command(bombs_amount, flags);
+        validated_input input = user_interface->take_command(bombs_amount, flags);
         do_action(input.action, input.row, input.col);
         user_interface->print_board();
         if((flags == bombs_amount && hidden_fields_amount == bombs_amount) || lose)
         {
-            user_interface->game_finished_messages(lose);
+            user_interface->game_finished_message(lose);
             if(continue_or_end() == false)
                 break;
         }
@@ -65,8 +65,8 @@ void Gameplay::main_game()
 
 bool Gameplay::continue_or_end()
 {
-    user_interface->play_once_again_question_message();
-    string answer = user_interface->continue_or_end_game_answer();
+    user_interface->play_once_again_message();
+    string answer = user_interface->continue_or_end_game_question();
     if(answer == "no")
     {
         user_interface->end_game_message();
@@ -86,7 +86,7 @@ void Gameplay::specify_settings()
     user_interface->board_ = board;
     sapper->set_board(board);
     bombs_amount = user_interface->specify_bombs_amount();
-    show_zeros = user_interface->specify_zeroes_shown();
+    show_zeros = user_interface->specify_zeros_shown();
 }
 
 void Gameplay::init_game()

@@ -50,8 +50,8 @@ std::string Translator::PL(std::string message)
         return "Zaczynajmy! [nacisnij dowolny przycisk]";
     if(message == "Flags left: ")
         return "Pozostale flagi: ";
-    if(message == "Tell me what to do! (action[show/mark/save_game], row[1-9] , col[1-9]):\n>")
-        return "Powiedz mi co mam zrobic! (akcja[pokaz/oznacz/zapisz_gre], rzad[1-9], kolumna[1-9])\n>";
+    if(message == "Tell me what to do! (action[show/mark/save_game], row , col):\n>")
+        return "Powiedz mi co mam zrobic! (akcja[pokaz/oznacz/zapisz_gre], rzad, kolumna)\n>";
     if(message == "\n\nWhat a pity! You stepped on a bomb!\n")
         return "\n\nNiestety! Wszedles na bombe!\n";
     if(message == "\n\nCongratulations! You marked all bombs correctly and saved many human beings!\n")
@@ -70,7 +70,7 @@ std::string Translator::PL(std::string message)
         return "\nBlad! Brak zapisanego postepu gry. [Nacisnij dowolny przycisk aby kontynuowac]";
     if(message == "\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>")
         return "\nPodaj ilosc bomb rozmieszonych na planszy (od 1 do kwadratu wielkosci planszy)\n>";
-    if(message == "\nSpecify if the zeroes will be shown since the game begin: [true/false]\n>")
+    if(message == "\nSpecify if the zeros will be shown since the game begin: [true/false]\n>")
         return "\nOkresl czy zera maja byc pokazane od poczatku rozgrywki [prawda/falsz]\n>";
     if(message == "\nInvalid value!")
         return "\nNiepoprawna wartosc!";
