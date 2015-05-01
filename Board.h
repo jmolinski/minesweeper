@@ -3,14 +3,15 @@
 
 typedef unsigned int UI;
 
+#include "BoardField.h"
+
 class Board
 {
     UI board_size;
 
 public:
-    char** board;
-    UI** board_int;
-    UI** shown;
+    BoardField** board;
+
     Board(const UI board_size_arg);
     ~Board();
     void clear_boards();

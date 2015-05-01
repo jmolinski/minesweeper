@@ -16,9 +16,9 @@ void Sapper::set_bombs_on_board(const UI bombs_amount)
     {
         UI row = rand()%board -> get_board_size();
         UI col = rand()%board -> get_board_size();
-        if(board -> board_int[row][col] != Board::FIELD_BOMB)
+        if(board -> board[row][col].val_int != Board::FIELD_BOMB)
         {
-            board -> board_int[row][col] = Board::FIELD_BOMB;
+            board -> board[row][col].val_int = Board::FIELD_BOMB;
             dec_bombs++;
         }
     }
@@ -26,13 +26,13 @@ void Sapper::set_bombs_on_board(const UI bombs_amount)
 
 void Sapper::set_field_value(UI row, UI col, bool show_zeros, UI& hidden_fields_amount)
 {
-    if(board -> board_int[row][col] != Board::FIELD_BOMB)
+    if(board -> board[row][col].val_int != Board::FIELD_BOMB)
     {
-        board -> board_int[row][col] = board -> count_bombs_around_field(row, col);
+        board -> board[row][col].val_int = board -> count_bombs_around_field(row, col);
         //if show_zeros is true - show zero-valued fields
-        if(show_zeros && board -> board_int[row][col] == 0)
+        if(show_zeros && board -> board[row][col].val_int == 0)
         {
-            board -> shown[row][col] = Board::FIELD_SHOWN;
+            board -> board[row][col].shown = Board::FIELD_SHOWN;
             --hidden_fields_amount;
         }
     }

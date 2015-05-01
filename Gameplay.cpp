@@ -111,9 +111,9 @@ void Gameplay::do_action(string action, UI row, UI col)
 {
     if(action == "mark")
         board->mark_field(row, col, flags, board->bombs_amount, lose);
-    else if(action == "show" && board->shown[row][col] == Board::FIELD_HIDDEN)
+    else if(action == "show" && board->board[row][col].shown == Board::FIELD_HIDDEN)
     {
-        board->shown[row][col] = Board::FIELD_SHOWN;
+        board->board[row][col].shown = Board::FIELD_SHOWN;
         --hidden_fields_amount;
     }
     else if(action == "save_game")

@@ -31,7 +31,7 @@ void BoardPrinter::print_row(UI row)
 {
     printf(" | ");
     for(UI col = 0; col < board->get_board_size(); col++)
-        std::cout << board->board[row][col] << " | ";
+        std::cout << board->board[row][col].value << " | ";
     printf("%i\n", row+1);
 }
 

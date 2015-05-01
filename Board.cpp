@@ -2,9 +2,9 @@
 
 void Board::clear_field(UI row, UI col)
 {
-    board[row][col] = 'X';
-    board_int[row][col] = 0;
-    shown[row][col] = FIELD_HIDDEN;
+    board[row][col].value = 'X';
+    board[row][col].val_int = 0;
+    board[row][col].shown = FIELD_HIDDEN;
 }
 
 void Board::clear_boards()
@@ -19,29 +19,16 @@ Board::Board(const UI board_size_arg)
 {
     this->board_size = board_size_arg;
 
-    board_int = new UI*[board_size+1];
-    shown = new UI*[board_size+1];
-    board = new char*[board_size+1];
+    board = new BoardField*[board_size+1];
 
     for(UI i = 0; i < board_size+1; i++)
-    {
-        board_int[i] = new UI[board_size+1];
-        shown[i] = new UI[board_size+1];
-        board[i] = new char[board_size+1];
-    }
+        board[i] = new BoardField[board_size+1];
 }
 
 Board::~Board()
 {
     for(UI i = 0; i < board_size+1; i++)
-    {
-        delete[] board_int[i];
-        delete[] shown[i];
         delete[] board[i];
-    }
-
-    delete[] board_int;
-    delete[] shown;
     delete[] board;
 }
 
@@ -57,7 +44,7 @@ bool Board::is_coord_inside_board(UI coord)
 
 bool Board::is_field_a_bomb(UI row, UI col)
 {
-    return board_int[row][col] == Board::FIELD_BOMB;
+    return board[row][col].val_int == Board::FIELD_BOMB;
 }
 
 UI Board::get_board_size()
@@ -74,17 +61,17 @@ void Board::update_board(bool& lose)
 
 void Board::update_field(UI row, UI col, bool& lose)
 {
-    if(shown[row][col] == Board::FIELD_HIDDEN)
-        board[row][col] = 'X';
-    else if(shown[row][col] == Board::FIELD_MARKED)
-        board[row][col] = 'M';
-    else if(board_int[row][col] == Board::FIELD_BOMB)
+    if(board[row][col].shown == Board::FIELD_HIDDEN)
+        board[row][col].value = 'X';
+    else if(board[row][col].shown == Board::FIELD_MARKED)
+        board[row][col].value = 'M';
+    else if(board[row][col].val_int == Board::FIELD_BOMB)
     {
-        board[row][col] = 'B';
+        board[row][col].value = 'B';
         lose = true;
     }
     else
-        board[row][col] = int_to_char(board_int[row][col]);
+        board[row][col].value = int_to_char(board[row][col].val_int);
 }
 
 inline char Board::int_to_char(int x)
@@ -94,14 +81,14 @@ inline char Board::int_to_char(int x)
 
 void Board::mark_field(UI row, UI col, UI& flags, const UI bombs_amount, bool& lose)
 {
-    if(shown[row][col] == Board::FIELD_HIDDEN && flags < bombs_amount)
+    if(board[row][col].shown == Board::FIELD_HIDDEN && flags < bombs_amount)
     {
-        shown[row][col] = Board::FIELD_MARKED;
+        board[row][col].shown = Board::FIELD_MARKED;
         flags++;
     }
-    else if(shown[row][col] == Board::FIELD_MARKED)
+    else if(board[row][col].shown == Board::FIELD_MARKED)
     {
-        shown[row][col] = Board::FIELD_HIDDEN;
+        board[row][col].shown = Board::FIELD_HIDDEN;
         flags--;
     }
 }
