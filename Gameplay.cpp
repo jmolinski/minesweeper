@@ -25,7 +25,7 @@ void Gameplay::setup()
 
     this->user_interface->specify_UI_language();
     start_new_game_or_continue_saved_proggress();
-    this->user_interface->board_ = board;
+    this->user_interface->board = board;
     this->sapper->set_board(board);
 }
 
@@ -83,7 +83,7 @@ bool Gameplay::continue_or_end()
 void Gameplay::specify_settings()
 {
     board = new Board(user_interface->specify_board_size());
-    user_interface->board_ = board;
+    user_interface->board = board;
     sapper->set_board(board);
     bombs_amount = user_interface->specify_bombs_amount();
     show_zeros = user_interface->specify_zeros_shown();

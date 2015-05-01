@@ -20,7 +20,7 @@ private:
     void finish_game(bool);
     char int_to_char(int x);
 
-    Board* board_;
+    Board* board;
 };
 
 #endif // SAPPER_H

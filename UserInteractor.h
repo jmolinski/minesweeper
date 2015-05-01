@@ -29,7 +29,7 @@ private:
     bool to_int(int& val, std::string str_val);
     validated_input validate_input(unverified_input unverified);
 public:
-    Board* board_;
+    Board* board;
     UI specify_board_size();
     UI specify_bombs_amount();
     bool specify_zeros_shown();

@@ -90,7 +90,7 @@ UI UserInteractor::specify_board_size()
 UI UserInteractor::specify_bombs_amount()
 {
     int input_int = 0;
-    int max_bombs_limit = board_->get_board_size()*board_->get_board_size();
+    int max_bombs_limit = board->get_board_size()*board->get_board_size();
     while(input_int > max_bombs_limit || input_int < 1)
     {
         cout << translator.loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>");
@@ -130,7 +130,7 @@ string UserInteractor::select_game_mode_question()
 void UserInteractor::print_board()
 {
     system("CLS");
-    this->board_printer.print_board(this->board_);
+    this->board_printer.print_board(this->board);
 }
 
 validated_input UserInteractor::take_command(UI bombs_amount, UI flags)
@@ -145,7 +145,7 @@ validated_input UserInteractor::take_command(UI bombs_amount, UI flags)
 validated_input UserInteractor::validate_input(unverified_input unverified)
 {
     validated_input validated;
-    int rown = board_->get_board_size() + 1, coln = board_->get_board_size() +1;
+    int rown = board->get_board_size() + 1, coln = board->get_board_size() +1;
     unverified.action = translator.to_en(unverified.action);
     try
     {
@@ -157,8 +157,8 @@ validated_input UserInteractor::validate_input(unverified_input unverified)
         // string to int with stoi(), ignore
     }
     validated.action = ((unverified.action == "show" || unverified.action == "mark" || unverified.action == "save_game")?(unverified.action):("invalid"));
-    validated.row = ((board_->is_coord_inside_board(rown))?(rown):(board_->get_board_size()+1));
-    validated.col = ((board_->is_coord_inside_board(coln))?(coln):(board_->get_board_size()+1));
+    validated.row = ((board->is_coord_inside_board(rown))?(rown):(board->get_board_size()+1));
+    validated.col = ((board->is_coord_inside_board(coln))?(coln):(board->get_board_size()+1));
     return validated;
 }
 
