@@ -127,75 +127,10 @@ string UserInteractor::select_game_mode_question()
     return (game_mode == "1" ? "new_game" : "saved_progress");
 }
 
-void UserInteractor::print_board_upper_body()
-{
-    printf("\n\n");
-    printf("                    ");
-    for(UI i = 0; i < board_->get_board_size(); i++)
-    {
-        string col = "%i  ";
-        col += [](int x)->string {return ((x>8)?(""):(" "));}(i);
-        printf(col.c_str(), i+1);
-    }
-    printf("\n                   ");
-    for(UI i = 0; i < board_->get_board_size()*4-1; i++)
-        printf("_");
-    printf("\n");
-}
-
-void UserInteractor::print_line_separating_rows()
-{
-    printf("|");
-    for(UI j = 0; j < board_->get_board_size()-1; j++)
-        printf("---+");
-    printf("---|\n");
-}
-
-void UserInteractor::print_row(UI row)
-{
-    printf(" | ");
-    for(UI col = 0; col < board_->get_board_size(); col++)
-        cout << board_->board[row][col] << " | ";
-    printf("%i\n", row+1);
-}
-
-void UserInteractor::print_board_main_body()
-{
-    for(UI row = 0; row < board_->get_board_size(); row++)
-    {
-        string spaces = [](UI row_num)->string {return ((row_num>8)?(""):(" "));}(row);
-        spaces += "               %i";
-        printf(spaces.c_str(), row+1);
-        print_row(row);
-        spaces = string(spaces.length(), ' ');
-        spaces += [](UI row_num)->string {return ((row_num>8)?(" "):(""));}(row);
-        printf(spaces.c_str());
-        if(row < board_->get_board_size()-1)
-            print_line_separating_rows();
-    }
-}
-
-void UserInteractor::print_board_lower_body()
-{
-    printf(" ");
-    for(UI i = 0; i < board_->get_board_size()*4-1; i++)
-        printf("-");
-    printf("\n                    ");
-    for(UI i = 0; i < board_->get_board_size(); i++)
-    {
-        string col = "%i  ";
-        col += [](int x)->string {return ((x<=8)?(" "):(""));}(i);
-        printf(col.c_str(), i+1);
-    }
-    printf("\n\n");
-}
-
 void UserInteractor::print_board()
 {
     system("CLS");
-    print_board_upper_body();
-    print_board_main_body();
-    print_board_lower_body();
+    this->board_printer.print_board(this->board_);
 }
 
 validated_input UserInteractor::take_command(UI bombs_amount, UI flags)

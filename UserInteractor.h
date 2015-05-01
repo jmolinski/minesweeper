@@ -3,6 +3,7 @@
 
 #include "Translator.h"
 #include "Board.h"
+#include "BoardPrinter.h"
 
 struct validated_input
 {
@@ -24,11 +25,7 @@ class UserInteractor
 {
 private:
     Translator translator;
-    void print_board_main_body();
-    void print_row(UI row);
-    void print_line_separating_rows();
-    void print_board_upper_body();
-    void print_board_lower_body();
+    BoardPrinter board_printer;
     bool to_int(int& val, std::string str_val);
     validated_input validate_input(unverified_input unverified);
 public:
