@@ -3,20 +3,20 @@
 
 #include "Board.h"
 #include "UserInteractor.h"
+#include "Gameplay.h"
 
 class Sapper
 {
-public:
-    void set_board(Board* board);
-    void set_bombs_on_board(const UI bombs_amount);
-    void set_fields_values(bool show_zeros);
-
-private:
-    UI count_bombs_around_field(int row, int col);
-    void set_field_value(UI row, UI col, bool show_zeros);
-    void finish_game(bool);
-
+    UserInteractor* user_interactor;
     Board* board;
+    void init_game();
+public:
+    Sapper();
+    ~Sapper();
+    void run();
+    void start_new_game_or_continue_saved_proggress();
+    void specify_settings();
+    bool continue_or_end();
 };
 
 #endif // SAPPER_H

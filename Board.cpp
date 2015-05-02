@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "Board.h"
 
 void Board::clear_boards()
@@ -40,21 +41,20 @@ UI Board::get_bombs_amount()
     return this->bombs_amount;
 }
 
-UI Board::set_bombs_amount(UI bombs_amount_arg)
+void Board::set_bombs_amount(UI bombs_amount_arg)
 {
     this->bombs_amount = bombs_amount_arg;
 }
 
-void Board::update_board(bool& lose)
+void Board::update_board()
 {
     for(UI row = 0; row < board_size; row++)
         for(UI col = 0; col < board_size; col++)
-            board[row][col].update(lose);
+            board[row][col].update();
 }
 
 UI Board::count_bombs_around_field(int row, int col)
 {
-    // counts bombs around XY field
     int bombs = 0;
     int rows[3] = {row-1, row, row+1};
     int cols[3] = {col-1, col, col+1};
@@ -62,7 +62,7 @@ UI Board::count_bombs_around_field(int row, int col)
     {
         if(is_coord_inside_board(current_row))
             for(int current_col: cols)
-                if(is_coord_inside_board(current_col) && board[current_row][current_col].is_a_bomb())
+                if(is_coord_inside_board(current_col) && board[current_row][current_col].is_bomb())
                     bombs++;
     }
     return bombs;
@@ -78,4 +78,48 @@ UI Board::get_hidden_fields_amount()
                 hidden_fields_amount++;
 
     return hidden_fields_amount;
+}
+
+UI Board::get_flags_amount()
+{
+    UI flags = 0;
+
+    for(UI row = 0; row < board_size; row++)
+        for(UI col = 0; col < board_size; col++)
+            if(board[row][col].is_marked())
+                flags++;
+
+    return bombs_amount-flags;
+}
+
+void Board::set_fields_values()
+{
+    for(UI row = 0; row < board_size; row++)
+        for(UI col = 0; col < board_size; col++)
+            board[row][col].set_value(show_zeros, count_bombs_around_field(row, col));
+}
+
+void Board::set_bombs_on_board()
+{
+    // sets bombs on the board
+    UI dec_bombs = 0;
+    while(dec_bombs != bombs_amount)
+    {
+        UI row = rand()% board_size;
+        UI col = rand()% board_size;
+        if(board[row][col].is_bomb() == false)
+        {
+            board[row][col].val_int = BoardField::FIELD_BOMB;
+            dec_bombs++;
+        }
+    }
+}
+
+bool Board::stepped_on_bomb()
+{
+    for(UI row = 0; row < board_size; row++)
+        for(UI col = 0; col < board_size; col++)
+            if(board[row][col].is_bomb() && board[row][col].is_revealed())
+                return true;
+    return false;
 }

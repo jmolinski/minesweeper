@@ -1,43 +1,85 @@
 #include <iostream>
+#include <ctime>
 #include "Sapper.h"
 
 using namespace std;
 
-void Sapper::set_board(Board* board)
+Sapper::Sapper()
 {
-    this->board = board;
+    this->user_interactor = new UserInteractor;
+    this->user_interactor->specify_UI_language();
 }
 
-void Sapper::set_bombs_on_board(const UI bombs_amount)
+Sapper::~Sapper()
 {
-    // sets bombs on the board
-    UI dec_bombs = 0;
-    while(dec_bombs != bombs_amount)
+    delete user_interactor;
+}
+
+void Sapper::run()
+{
+    start_new_game_or_continue_saved_proggress();
+    while(true)
     {
-        UI row = rand()%board -> get_board_size();
-        UI col = rand()%board -> get_board_size();
-        if(board -> board[row][col].val_int != BoardField::FIELD_BOMB)
+        Gameplay game(user_interactor, board);
+        game.run();
+        delete board;
+        if(continue_or_end() == false)
+            break;
+        else
         {
-            board -> board[row][col].val_int = BoardField::FIELD_BOMB;
-            dec_bombs++;
+            specify_settings();
+            init_game();
         }
     }
 }
 
-void Sapper::set_field_value(UI row, UI col, bool show_zeros)
+void Sapper::start_new_game_or_continue_saved_proggress()
 {
-    if(board -> board[row][col].val_int != BoardField::FIELD_BOMB)
+    string game_mode = user_interactor->select_game_mode_question();
+    if(game_mode == "new_game")
     {
-        board -> board[row][col].val_int = board -> count_bombs_around_field(row, col);
-        if(show_zeros && board -> board[row][col].val_int == 0)
-            board -> board[row][col].shown = BoardField::FIELD_SHOWN;
+        specify_settings();
+        init_game();
+    }
+    if(game_mode == "saved_progress")
+    {
+        GameplaySaver* GS = new GameplaySaver;
+        if(GS->load(board) == false)
+        {
+            user_interactor->no_saved_progress_error_message();
+            specify_settings();
+            init_game();
+        }
+        delete GS;
     }
 }
 
-void Sapper::set_fields_values(bool show_zeros)
+void Sapper::specify_settings()
 {
-    // set value to each non-bomb field
-    for(UI row = 0; row < board->get_board_size(); row++)
-        for(UI col = 0; col < board->get_board_size(); col++)
-            set_field_value(row, col, show_zeros);
+    board = new Board(user_interactor->specify_board_size());
+    user_interactor->board = board;
+    board->set_bombs_amount(user_interactor->specify_bombs_amount());
+    board->show_zeros = user_interactor->specify_zeros_shown();
+}
+
+void Sapper::init_game()
+{
+    srand(time(NULL));
+    board -> clear_boards();
+    board -> set_bombs_on_board();
+    board->set_fields_values();
+    board->update_board();
+}
+
+bool Sapper::continue_or_end()
+{
+    user_interactor->play_once_again_message();
+    string answer = user_interactor->continue_or_end_game_question();
+    if(answer == "no")
+    {
+        user_interactor->end_game_message();
+        return false;
+    }
+    user_interactor->continue_game_message();
+    return true;
 }

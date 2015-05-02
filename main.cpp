@@ -1,8 +1,8 @@
-#include "Gameplay.h"
+#include "Sapper.h"
 
 int main()
 {
-    Gameplay game;
+    Sapper game;
     game.run();
     return 0;
 }

@@ -136,7 +136,7 @@ void UserInteractor::print_board()
 validated_input UserInteractor::take_command(UI bombs_amount, UI flags)
 {
     unverified_input ui;
-    cout << translator.loc("Flags left: ") << bombs_amount - flags << "\n";
+    cout << translator.loc("Flags left: ") << flags << "\n";
     cout << translator.loc("Tell me what to do! (action[show/mark/save_game], row, col):\n>");
     cin>>ui.action>>ui.row>>ui.col;
     return validate_input(ui);

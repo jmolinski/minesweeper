@@ -15,14 +15,16 @@ public:
     static const UI FIELD_SHOWN = 11;
     static const UI FIELD_HIDDEN = 12;
 
-    void mark(UI& flags, const UI bombs_amount, bool& lose);
+    void mark(const UI flags);
     void reveal();
     void clear();
-    void update(bool& lose);
+    void update();
     char int_to_char(int x);
-    bool is_a_bomb();
+    bool is_bomb();
     bool is_hidden();
     bool is_marked();
+    bool is_revealed();
+    void set_value(bool show_zeros, UI bombs_around_field);
 };
 
 #endif // BOARDFIELD_H

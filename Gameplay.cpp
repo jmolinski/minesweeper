@@ -7,47 +7,19 @@ using namespace std;
 
 Gameplay::~Gameplay()
 {
-    delete sapper;
-    delete user_interface;
+
+}
+
+Gameplay::Gameplay(UserInteractor* user_interactor, Board* board)
+{
+    this->user_interface = user_interactor;
+    this->board = board;
 }
 
 void Gameplay::run()
 {
-    setup();
     user_interface->print_board();
     main_game();
-}
-
-void Gameplay::setup()
-{
-    this->sapper = new Sapper;
-    this->user_interface = new UserInteractor;
-
-    this->user_interface->specify_UI_language();
-    start_new_game_or_continue_saved_proggress();
-    this->user_interface->board = board;
-    this->sapper->set_board(board);
-}
-
-void Gameplay::start_new_game_or_continue_saved_proggress()
-{
-    string game_mode = user_interface->select_game_mode_question();
-    if(game_mode == "new_game")
-    {
-        specify_settings();
-        init_game();
-    }
-    if(game_mode == "saved_progress")
-    {
-        GameplaySaver* GS = new GameplaySaver;
-        if(GS->load(board, show_zeros, flags, lose) == false)
-        {
-            user_interface->no_saved_progress_error_message();
-            specify_settings();
-            init_game();
-        }
-        delete GS;
-    }
 }
 
 void Gameplay::main_game()
@@ -55,69 +27,29 @@ void Gameplay::main_game()
     string action, row, col;
     while(true)
     {
-        validated_input input = user_interface->take_command(board->get_bombs_amount(), flags);
+        validated_input input = user_interface->take_command(board->get_bombs_amount(), board->get_flags_amount());
         do_action(input.action, input.row, input.col);
         user_interface->print_board();
-        if((flags == board->get_bombs_amount() && board->get_hidden_fields_amount() == 0) || lose)
+        if((board->get_flags_amount() == 0 && board->get_hidden_fields_amount() == 0) || board->stepped_on_bomb())
         {
-            user_interface->game_finished_message(lose);
-            if(continue_or_end() == false)
-                break;
+            user_interface->game_finished_message(board->stepped_on_bomb());
+            break;
         }
     }
-}
-
-bool Gameplay::continue_or_end()
-{
-    user_interface->play_once_again_message();
-    string answer = user_interface->continue_or_end_game_question();
-    if(answer == "no")
-    {
-        user_interface->end_game_message();
-        return false;
-    }
-    user_interface->continue_game_message();
-    delete board;
-    specify_settings();
-    init_game();
-    user_interface->print_board();
-    return true;
-}
-
-void Gameplay::specify_settings()
-{
-    board = new Board(user_interface->specify_board_size());
-    user_interface->board = board;
-    sapper->set_board(board);
-    board->set_bombs_amount(user_interface->specify_bombs_amount());
-    show_zeros = user_interface->specify_zeros_shown();
-}
-
-void Gameplay::init_game()
-{
-    srand(time(NULL));
-    // set each field to its default value
-    board -> clear_boards();
-    sapper -> set_bombs_on_board(board->get_bombs_amount());
-    // set values of all non-bomb fields
-    sapper->set_fields_values(show_zeros);
-    lose = false;
-    flags = 0;
-    board->update_board(lose);
 }
 
 void Gameplay::do_action(string action, UI row, UI col)
 {
     if(action == "mark")
-        board->board[row][col].mark(flags, board->get_bombs_amount(), lose);
+        board->board[row][col].mark(board->get_flags_amount());
     else if(action == "show")
         board->board[row][col].reveal();
     else if(action == "save_game")
     {
         GameplaySaver* GS = new GameplaySaver;
-        GS->save(board, show_zeros, flags, lose);
+        GS->save(board);
         delete GS;
         user_interface->game_saved_message();
     }
-    board->board[row][col].update(lose);
+    board->board[row][col].update();
 }

@@ -5,17 +5,21 @@ const UI BoardField::FIELD_MARKED;
 const UI BoardField::FIELD_SHOWN;
 const UI BoardField::FIELD_HIDDEN;
 
-void BoardField::mark(UI& flags, const UI bombs_amount, bool& lose)
+void BoardField::mark(const UI flags)
 {
-    if(this->shown == FIELD_HIDDEN && flags < bombs_amount)
-    {
+    if(this->shown == FIELD_HIDDEN && flags)
         this->shown = FIELD_MARKED;
-        flags++;
-    }
     else if(this->shown == FIELD_MARKED)
-    {
         this->shown = FIELD_HIDDEN;
-        flags--;
+}
+
+void BoardField::set_value(bool show_zeros, UI bombs_around_field)
+{
+    if(this->val_int != FIELD_BOMB)
+    {
+        this->val_int = bombs_around_field;
+        if(show_zeros && this->val_int == 0)
+            this->shown = FIELD_SHOWN;
     }
 }
 
@@ -26,17 +30,14 @@ void BoardField::clear()
     this->shown = FIELD_HIDDEN;
 }
 
-void BoardField::update(bool& lose)
+void BoardField::update()
 {
     if(this->shown == FIELD_HIDDEN)
         this->value = 'X';
     else if(this->shown == FIELD_MARKED)
         this->value = 'M';
     else if(this->val_int == FIELD_BOMB)
-    {
         this->value = 'B';
-        lose = true;
-    }
     else
         this->value = int_to_char(this->val_int);
 }
@@ -46,7 +47,7 @@ inline char BoardField::int_to_char(int x)
     return (x+48);
 }
 
-bool BoardField::is_a_bomb()
+bool BoardField::is_bomb()
 {
     return this->val_int == FIELD_BOMB;
 }
@@ -59,6 +60,11 @@ bool BoardField::is_hidden()
 bool BoardField::is_marked()
 {
     return this->shown == FIELD_MARKED;
+}
+
+bool BoardField::is_revealed()
+{
+    return this->shown == FIELD_SHOWN;
 }
 
 void BoardField::reveal()
