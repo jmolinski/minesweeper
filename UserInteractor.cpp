@@ -36,7 +36,7 @@ void UserInteractor::game_saved_message()
     cin.get();
 }
 
-string UserInteractor::continue_or_end_game_question()
+bool UserInteractor::continue_or_end_game_question()
 {
     string answer;
     while(answer != "yes" && answer != "no")
@@ -45,7 +45,7 @@ string UserInteractor::continue_or_end_game_question()
         cin>>answer;
         answer = translator.to_en(answer);
     }
-    return answer;
+    return answer == "yes";
 }
 
 void UserInteractor::game_finished_message(bool lose)
@@ -59,15 +59,14 @@ void UserInteractor::game_finished_message(bool lose)
 void UserInteractor::specify_UI_language()
 {
     string selected, language;
-    while(selected != "en" && selected != "EN" && selected != "PL" && selected != "pl" &&
-            selected != "1" && selected != "2")
+    while(selected != "1" && selected != "2")
     {
         cout<<"Select language:\n1.EN [English]\n2.PL [Polski]\n>";
         cin>>selected;
     }
-    if(selected == "1" || selected == "EN" || selected == "en")
+    if(selected == "1")
         language = "EN";
-    if(selected == "2" || selected == "PL" || selected == "pl")
+    if(selected == "2")
         language = "PL";
     language = "EN";
     this->translator.set_language(language);
@@ -76,13 +75,14 @@ void UserInteractor::specify_UI_language()
 UI UserInteractor::specify_board_size()
 {
     int input_int = 0;
-    while(input_int > 99 || input_int < 1)
+    while(true)
     {
         cout << translator.loc("\nSpecify the size of the board (1 to 99)\n>");
         string input;
         cin>>input;
-        if(to_int(input_int, input) == false || (input_int > 99 || input_int < 1))
-            cout << translator.loc("\nInvalid value!");
+        if(to_int(input_int, input) && input_int <= 99 && input_int >= 1)
+            break;
+        cout << translator.loc("\nInvalid value!");
     }
     return static_cast<UI>(input_int);
 }
@@ -91,13 +91,14 @@ UI UserInteractor::specify_bombs_amount()
 {
     int input_int = 0;
     int max_bombs_limit = board->get_board_size()*board->get_board_size();
-    while(input_int > max_bombs_limit || input_int < 1)
+    while(true)
     {
         cout << translator.loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>");
         string input;
-        cin>>input;
-        if(to_int(input_int, input) == false || input_int > max_bombs_limit || input_int < 1)
-            cout << translator.loc("\nInvalid value!");
+        cin >> input;
+        if(to_int(input_int, input) && input_int <= max_bombs_limit && input_int >= 1)
+            break;
+        cout << translator.loc("\nInvalid value!");
     }
     return static_cast<UI>(input_int);
 }
@@ -108,12 +109,12 @@ bool UserInteractor::specify_zeros_shown()
     while(input != "true" && input != "false")
     {
         cout << translator.loc("\nSpecify if the zeros will be shown since the game begin: [true/false]\n>");
-        cin>>input;
+        cin >> input;
         input = translator.to_en(input);
         if(input != "true" && input != "false")
             cout << translator.loc("\nInvalid value!");
     }
-    return ( (input == "true") ? (true) : (false) );
+    return input == "true";
 }
 
 string UserInteractor::select_game_mode_question()
@@ -122,7 +123,7 @@ string UserInteractor::select_game_mode_question()
     while(game_mode != "1" && game_mode != "2")
     {
         cout << translator.loc("\nSelect game mode:\n1.Start new game\n2.Continue saved game\n>");
-        cin>>game_mode;
+        cin >> game_mode;
     }
     return (game_mode == "1" ? "new_game" : "saved_progress");
 }
@@ -130,7 +131,7 @@ string UserInteractor::select_game_mode_question()
 void UserInteractor::print_board()
 {
     system("CLS");
-    this->board_printer.print_board(this->board);
+    this->board_printer.print(this->board);
 }
 
 validated_input UserInteractor::take_command(UI bombs_amount, UI flags)
@@ -145,7 +146,8 @@ validated_input UserInteractor::take_command(UI bombs_amount, UI flags)
 validated_input UserInteractor::validate_input(unverified_input unverified)
 {
     validated_input validated;
-    int rown = board->get_board_size() + 1, coln = board->get_board_size() +1;
+    int rown = board->get_board_size() + 1;
+    int coln = board->get_board_size() +1;
     unverified.action = translator.to_en(unverified.action);
     try
     {

@@ -37,7 +37,7 @@ public:
     void print_board();
     validated_input take_command(UI, UI);
     void game_saved_message();
-    std::string continue_or_end_game_question();
+    bool continue_or_end_game_question();
     void end_game_message();
     void continue_game_message();
     void game_finished_message(bool lose);

@@ -1,4 +1,3 @@
-#include <iostream>
 #include <ctime>
 #include "Sapper.h"
 
@@ -59,14 +58,14 @@ void Sapper::specify_settings()
     board = new Board(user_interactor->specify_board_size());
     user_interactor->board = board;
     board->set_bombs_amount(user_interactor->specify_bombs_amount());
-    board->show_zeros = user_interactor->specify_zeros_shown();
+    board->set_show_zeros_value(user_interactor->specify_zeros_shown());
 }
 
 void Sapper::init_game()
 {
     srand(time(NULL));
-    board -> clear_boards();
-    board -> set_bombs_on_board();
+    board->clear_boards();
+    board->set_bombs_on_board();
     board->set_fields_values();
     board->update_board();
 }
@@ -74,8 +73,8 @@ void Sapper::init_game()
 bool Sapper::continue_or_end()
 {
     user_interactor->play_once_again_message();
-    string answer = user_interactor->continue_or_end_game_question();
-    if(answer == "no")
+    bool answer = user_interactor->continue_or_end_game_question();
+    if(!answer)
     {
         user_interactor->end_game_message();
         return false;

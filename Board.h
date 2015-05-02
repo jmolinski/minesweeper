@@ -9,16 +9,17 @@ class Board
 {
     UI board_size;
     UI bombs_amount;
+    bool show_zeros;
 
 public:
     BoardField** board;
-    bool show_zeros;
 
     Board(const UI board_size_arg);
     ~Board();
     void clear_boards();
     UI get_board_size();
     UI get_bombs_amount();
+    void set_show_zeros_value(const bool show_zeros);
     void set_bombs_amount(UI bombs_amount_arg);
     bool is_coord_inside_board(UI coord);
     void update_board();

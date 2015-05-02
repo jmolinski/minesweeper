@@ -3,16 +3,14 @@
 
 void Board::clear_boards()
 {
-    // set all fields to its default value
     for(UI row = 0; row < board_size; row++)
         for(UI col = 0; col < board_size; col++)
             board[row][col].clear();
 }
 
-Board::Board(const UI board_size_arg)
+Board::Board(const UI board_size)
 {
-    this->board_size = board_size_arg;
-
+    this->board_size = board_size;
     board = new BoardField*[board_size+1];
 
     for(UI i = 0; i < board_size+1; i++)
@@ -41,9 +39,9 @@ UI Board::get_bombs_amount()
     return this->bombs_amount;
 }
 
-void Board::set_bombs_amount(UI bombs_amount_arg)
+void Board::set_bombs_amount(UI bombs_amount)
 {
-    this->bombs_amount = bombs_amount_arg;
+    this->bombs_amount = bombs_amount;
 }
 
 void Board::update_board()
@@ -60,10 +58,9 @@ UI Board::count_bombs_around_field(int row, int col)
     int cols[3] = {col-1, col, col+1};
     for(int current_row: rows)
     {
-        if(is_coord_inside_board(current_row))
-            for(int current_col: cols)
-                if(is_coord_inside_board(current_col) && board[current_row][current_col].is_bomb())
-                    bombs++;
+        for(int current_col: cols)
+            if(is_coord_inside_board(current_row) && is_coord_inside_board(current_col) && board[current_row][current_col].is_bomb())
+                bombs++;
     }
     return bombs;
 }
@@ -101,16 +98,15 @@ void Board::set_fields_values()
 
 void Board::set_bombs_on_board()
 {
-    // sets bombs on the board
-    UI dec_bombs = 0;
-    while(dec_bombs != bombs_amount)
+    UI bombs_set = 0;
+    while(bombs_set != bombs_amount)
     {
         UI row = rand()% board_size;
         UI col = rand()% board_size;
         if(board[row][col].is_bomb() == false)
         {
-            board[row][col].val_int = BoardField::FIELD_BOMB;
-            dec_bombs++;
+            board[row][col].set_bomb();
+            bombs_set++;
         }
     }
 }
@@ -122,4 +118,9 @@ bool Board::stepped_on_bomb()
             if(board[row][col].is_bomb() && board[row][col].is_revealed())
                 return true;
     return false;
+}
+
+void Board::set_show_zeros_value(const bool show_zeros)
+{
+    this->show_zeros = show_zeros;
 }

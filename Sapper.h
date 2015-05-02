@@ -7,16 +7,17 @@
 
 class Sapper
 {
-    UserInteractor* user_interactor;
-    Board* board;
-    void init_game();
 public:
     Sapper();
     ~Sapper();
     void run();
-    void start_new_game_or_continue_saved_proggress();
+private:
+    UserInteractor* user_interactor;
+    Board* board;
+    void init_game();
     void specify_settings();
     bool continue_or_end();
+    void start_new_game_or_continue_saved_proggress();
 };
 
 #endif // SAPPER_H

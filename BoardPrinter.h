@@ -6,14 +6,13 @@
 class BoardPrinter
 {
 private:
-    Board* board;
-    void print_board_main_body();
-    void print_row(UI row);
-    void print_line_separating_rows();
-    void print_board_upper_body();
-    void print_board_lower_body();
+    void print_main_body(Board* board);
+    void print_row(Board* board, UI row);
+    void print_line_separating_rows(UI board_size);
+    void print_upper_body(UI board_size);
+    void print_lower_body(UI board_size);
 public:
-    void print_board(Board* board);
+    void print(Board* board);
 };
 
 #endif // BOARDPRINTER_H

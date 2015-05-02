@@ -13,6 +13,17 @@ void BoardField::mark(const UI flags)
         this->shown = FIELD_HIDDEN;
 }
 
+void BoardField::reveal()
+{
+    if(this->shown == FIELD_HIDDEN)
+        this->shown = FIELD_SHOWN;
+}
+
+void BoardField::set_bomb()
+{
+    this->val_int = FIELD_BOMB;
+}
+
 void BoardField::set_value(bool show_zeros, UI bombs_around_field)
 {
     if(this->val_int != FIELD_BOMB)
@@ -65,10 +76,4 @@ bool BoardField::is_marked()
 bool BoardField::is_revealed()
 {
     return this->shown == FIELD_SHOWN;
-}
-
-void BoardField::reveal()
-{
-    if(this->shown == FIELD_HIDDEN)
-        this->shown = FIELD_SHOWN;
 }
