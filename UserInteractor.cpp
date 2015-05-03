@@ -66,9 +66,8 @@ void UserInteractor::specify_UI_language()
     }
     if(selected == "1")
         language = "EN";
-    if(selected == "2")
+    else if(selected == "2")
         language = "PL";
-    language = "EN";
     this->translator.set_language(language);
 }
 
