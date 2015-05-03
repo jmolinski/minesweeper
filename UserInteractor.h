@@ -7,16 +7,10 @@
 
 struct validated_input
 {
+    validated_input(std::string action, int row, int col);
     std::string action;
     int row;
     int col;
-};
-
-struct unverified_input
-{
-    std::string action;
-    std::string row;
-    std::string col;
 };
 
 typedef unsigned int UI;
@@ -28,7 +22,7 @@ private:
     Translator translator;
     BoardPrinter board_printer;
     bool to_int(int& val, std::string str_val);
-    validated_input validate_input(unverified_input unverified);
+    validated_input validate_input(std::string action_u, std::string row_u, std::string col_u);
 public:
     UI specify_board_size();
     UI specify_bombs_amount(const UI board_size);

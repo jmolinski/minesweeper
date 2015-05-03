@@ -19,7 +19,7 @@ public:
     void clear_boards();
     UI get_board_size();
     UI get_bombs_amount();
-    bool is_coord_inside_board(UI coord);
+    bool is_coord_inside_board(const int x, const int y);
     void update_board();
     UI count_bombs_around_field(int row, int col);
     UI get_hidden_fields_amount();

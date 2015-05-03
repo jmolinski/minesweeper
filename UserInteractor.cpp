@@ -135,32 +135,37 @@ void UserInteractor::print_board()
 
 validated_input UserInteractor::take_command(UI bombs_amount, UI flags)
 {
-    unverified_input ui;
+    string action, row, col;
     cout << translator.loc("Flags left: ") << flags << "\n";
     cout << translator.loc("Tell me what to do! (action[show/mark/save_game], row, col):\n>");
-    cin>>ui.action>>ui.row>>ui.col;
-    return validate_input(ui);
+    cin>>action>>row>>col;
+    return validate_input(action, row, col);
 }
 
-validated_input UserInteractor::validate_input(unverified_input unverified)
+validated_input::validated_input(std::string action, int row, int col)
 {
-    validated_input validated;
-    int rown = board->get_board_size() + 1;
-    int coln = board->get_board_size() +1;
-    unverified.action = translator.to_en(unverified.action);
+    this->action = action;
+    this->row = row;
+    this->col = col;
+}
+
+validated_input UserInteractor::validate_input(string action_u, string row_u, string col_u)
+{
+    int row, col;
+    string action = translator.to_en(action_u);
     try
     {
-        rown = stoi(unverified.row) - 1, coln = stoi(unverified.col) - 1;
+        row = stoi(row_u) - 1;
+        col = stoi(col_u) - 1;
     }
     catch(...)
     {
-        // error when converting invalid value from
-        // string to int with stoi(), ignore
+        // error when converting invalid value from string to int with stoi()
+        return validated_input(string("invalid"), 0, 0);
     }
-    validated.action = ((unverified.action == "show" || unverified.action == "mark" || unverified.action == "save_game")?(unverified.action):("invalid"));
-    validated.row = ((board->is_coord_inside_board(rown))?(rown):(board->get_board_size()+1));
-    validated.col = ((board->is_coord_inside_board(coln))?(coln):(board->get_board_size()+1));
-    return validated;
+    if(board->is_coord_inside_board(row, col) == false || (action != "show" && action != "mark" && action != "save_game"))
+        return validated_input(string("invalid"), 0, 0);
+    return validated_input(action, row, col);
 }
 
 bool UserInteractor::to_int(int& val, string str_val)
