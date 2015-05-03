@@ -16,7 +16,7 @@ bool GameplaySaver::load(Board* board)
         for(UI j = 0; j < board_size; j++)
         {
             saved_progress >> value >> val_int >> shown;
-            board->board[i][j].deserialize(val_int, shown, value);
+            board->deserialize_field(i, j, val_int, shown, value);
         }
     saved_progress.close();
     return true;
@@ -28,6 +28,6 @@ void GameplaySaver::save(Board* board)
     saved_progress << board->get_board_size() << "\n" << board->get_bombs_amount() << "\n";
     for(UI i = 0; i < board->get_board_size(); i++)
         for(UI j = 0; j < board->get_board_size(); j++)
-            saved_progress << board->board[i][j].serialize();
+            saved_progress << board->serialize_field(i, j);
     saved_progress.close();
 }

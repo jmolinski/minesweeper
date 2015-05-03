@@ -117,3 +117,33 @@ bool Board::stepped_on_bomb()
                 return true;
     return false;
 }
+
+void Board::mark(const UI row, const UI col)
+{
+    this->board[row][col].mark(get_flags_amount());
+}
+
+void Board::reveal(const UI row, const UI col)
+{
+    this->board[row][col].reveal();
+}
+
+void Board::update(const UI row, const UI col)
+{
+    this->board[row][col].update();
+}
+
+char Board::get_value(const UI row, const UI col)
+{
+    return this->board[row][col].get_value();
+}
+
+std::string Board::serialize_field(const UI row, const UI col)
+{
+    return this->board[row][col].serialize();
+}
+
+void Board::deserialize_field(const UI row, const UI col, const UI val_int, const UI shown, const char value)
+{
+    this->board[row][col].deserialize(val_int, shown, value);
+}

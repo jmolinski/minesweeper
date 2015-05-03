@@ -28,9 +28,9 @@ void Gameplay::run()
 void Gameplay::do_action(string action, UI row, UI col)
 {
     if(action == "mark")
-        board->board[row][col].mark(board->get_flags_amount());
+        board->mark(row, col);
     else if(action == "show")
-        board->board[row][col].reveal();
+        board->reveal(row, col);
     else if(action == "save_game")
     {
         GameplaySaver* GS = new GameplaySaver;
@@ -38,5 +38,5 @@ void Gameplay::do_action(string action, UI row, UI col)
         delete GS;
         user_interactor->game_saved_message();
     }
-    board->board[row][col].update();
+    board->update(row, col);
 }

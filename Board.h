@@ -11,9 +11,9 @@ class Board
     UI bombs_amount;
     bool show_zeros;
 
-public:
     BoardField** board;
 
+public:
     Board(const UI board_size, const UI bombs_amount, const bool show_zeros);
     ~Board();
     void clear_boards();
@@ -27,6 +27,12 @@ public:
     void set_fields_values();
     void set_bombs_on_board();
     bool stepped_on_bomb();
+    void mark(const UI row, const UI col);
+    void reveal(const UI row, const UI col);
+    void update(const UI row, const UI col);
+    char get_value(const UI row, const UI col);
+    std::string serialize_field(const UI row, const UI col);
+    void deserialize_field(const UI row, const UI col, const UI val_int, const UI shown, const char value);
 };
 
 #endif // BOARD_H
