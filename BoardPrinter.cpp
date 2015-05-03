@@ -29,7 +29,7 @@ void BoardPrinter::print_row(Board* board, UI row)
 {
     printf(" | ");
     for(UI col = 0; col < board->get_board_size(); col++)
-        std::cout << board->board[row][col].value << " | ";
+        std::cout << board->board[row][col].get_value() << " | ";
     printf("%i\n", row+1);
 }
 

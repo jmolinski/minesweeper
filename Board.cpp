@@ -8,9 +8,12 @@ void Board::clear_boards()
             board[row][col].clear();
 }
 
-Board::Board(const UI board_size)
+Board::Board(const UI board_size, const UI bombs_amount, const bool show_zeros)
 {
     this->board_size = board_size;
+    this->bombs_amount = bombs_amount;
+    this->show_zeros = show_zeros;
+
     board = new BoardField*[board_size+1];
 
     for(UI i = 0; i < board_size+1; i++)
@@ -37,11 +40,6 @@ UI Board::get_board_size()
 UI Board::get_bombs_amount()
 {
     return this->bombs_amount;
-}
-
-void Board::set_bombs_amount(UI bombs_amount)
-{
-    this->bombs_amount = bombs_amount;
 }
 
 void Board::update_board()
@@ -118,9 +116,4 @@ bool Board::stepped_on_bomb()
             if(board[row][col].is_bomb() && board[row][col].is_revealed())
                 return true;
     return false;
-}
-
-void Board::set_show_zeros_value(const bool show_zeros)
-{
-    this->show_zeros = show_zeros;
 }

@@ -1,3 +1,4 @@
+#include <sstream>
 #include "BoardField.h"
 
 const UI BoardField::FIELD_BOMB;
@@ -76,4 +77,24 @@ bool BoardField::is_marked()
 bool BoardField::is_revealed()
 {
     return this->shown == FIELD_SHOWN;
+}
+
+char BoardField::get_value()
+{
+    return this->value;
+}
+
+
+std::string BoardField::serialize()
+{
+    std::stringstream str;
+    str << this->value << " " << this->val_int << " " << this->shown << "\n";
+    return str.str();
+}
+
+void BoardField::deserialize(const UI val_int, const UI shown, const char value)
+{
+    this->value = value;
+    this->shown = shown;
+    this->val_int = val_int;
 }

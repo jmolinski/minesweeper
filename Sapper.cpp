@@ -55,10 +55,12 @@ void Sapper::start_new_game_or_continue_saved_proggress()
 
 void Sapper::specify_settings()
 {
-    board = new Board(user_interactor->specify_board_size());
-    user_interactor->board = board;
-    board->set_bombs_amount(user_interactor->specify_bombs_amount());
-    board->set_show_zeros_value(user_interactor->specify_zeros_shown());
+    UI board_size = user_interactor->specify_board_size();
+    UI bombs_amount = user_interactor->specify_bombs_amount(board_size);
+    bool show_zeros = user_interactor->specify_zeros_shown();
+
+    board = new Board(board_size, bombs_amount, show_zeros);
+    user_interactor->set_board(board);
 }
 
 void Sapper::init_game()

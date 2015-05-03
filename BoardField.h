@@ -1,6 +1,8 @@
 #ifndef BOARDFIELD_H
 #define BOARDFIELD_H
 
+#include <string>
+
 typedef unsigned int UI;
 
 class BoardField
@@ -13,11 +15,11 @@ private:
 
     char int_to_char(int x);
 
-public:
     UI shown;
     UI val_int;
     char value;
 
+public:
     void mark(const UI flags);
     void reveal();
     void clear();
@@ -28,6 +30,9 @@ public:
     bool is_marked();
     bool is_revealed();
     void set_value(bool show_zeros, UI bombs_around_field);
+    std::string serialize();
+    void deserialize(const UI val_int, const UI shown, const char value);
+    char get_value();
 };
 
 #endif // BOARDFIELD_H

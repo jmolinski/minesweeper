@@ -87,10 +87,10 @@ UI UserInteractor::specify_board_size()
     return static_cast<UI>(input_int);
 }
 
-UI UserInteractor::specify_bombs_amount()
+UI UserInteractor::specify_bombs_amount(const UI board_size)
 {
     int input_int = 0;
-    int max_bombs_limit = board->get_board_size()*board->get_board_size();
+    int max_bombs_limit = board_size*board_size;
     while(true)
     {
         cout << translator.loc("\nSpecify how many bombs will be set on the board (1 to the square od board size)\n>");
@@ -176,4 +176,9 @@ bool UserInteractor::to_int(int& val, string str_val)
         return false;
     }
     return true;
+}
+
+void UserInteractor::set_board(Board* board)
+{
+    this->board = board;
 }

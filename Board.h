@@ -14,13 +14,11 @@ class Board
 public:
     BoardField** board;
 
-    Board(const UI board_size_arg);
+    Board(const UI board_size, const UI bombs_amount, const bool show_zeros);
     ~Board();
     void clear_boards();
     UI get_board_size();
     UI get_bombs_amount();
-    void set_show_zeros_value(const bool show_zeros);
-    void set_bombs_amount(UI bombs_amount_arg);
     bool is_coord_inside_board(UI coord);
     void update_board();
     UI count_bombs_around_field(int row, int col);
