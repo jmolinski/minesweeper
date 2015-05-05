@@ -29,7 +29,7 @@ Board::~Board()
 
 bool Board::is_coord_inside_board(const int x, const int y)
 {
-    return (x >= 0 && x < board_size) && (y >= 0 && y < board_size);
+    return (x >= 0 && x < static_cast<int>(board_size)) && (y >= 0 && y < static_cast<int>(board_size));
 }
 
 UI Board::get_board_size()

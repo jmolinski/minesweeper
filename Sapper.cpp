@@ -5,52 +5,61 @@ using namespace std;
 
 Sapper::Sapper()
 {
+    this->gameplay_saver = new GameplaySaver;
     this->user_interactor = new UserInteractor;
-    this->user_interactor->specify_UI_language();
 }
 
 Sapper::~Sapper()
 {
+    delete gameplay_saver;
     delete user_interactor;
 }
 
 void Sapper::run()
 {
-    start_new_game_or_continue_saved_proggress();
     while(true)
     {
-        Gameplay game(user_interactor, board);
-        game.run();
-        delete board;
-        if(continue_or_end() == false)
-            break;
-        else
+        user_interactor->print_menu();
+        UI user_selection = user_interactor->menu_selection_question();
+
+        switch(user_selection)
         {
+        case 1:
             specify_settings();
             init_game();
+            run_gameplay();
+            break;
+        case 2:
+            load_game();
+            run_gameplay();
+            break;
+        case 3:
+            user_interactor->specify_UI_language();
+            break;
+        case 4:
+            user_interactor->about_game();
+            break;
+        case 5:
+            return;
         }
     }
 }
 
-void Sapper::start_new_game_or_continue_saved_proggress()
+void Sapper::load_game()
 {
-    string game_mode = user_interactor->select_game_mode_question();
-    if(game_mode == "new_game")
+    if(gameplay_saver->load(board) == false)
     {
+        user_interactor->no_saved_progress_error_message();
         specify_settings();
         init_game();
     }
-    if(game_mode == "saved_progress")
-    {
-        GameplaySaver* GS = new GameplaySaver;
-        if(GS->load(board) == false)
-        {
-            user_interactor->no_saved_progress_error_message();
-            specify_settings();
-            init_game();
-        }
-        delete GS;
-    }
+}
+
+void Sapper::run_gameplay()
+{
+    Gameplay game(user_interactor, board);
+    game.run();
+    delete board;
 }
 
 void Sapper::specify_settings()
@@ -60,7 +69,6 @@ void Sapper::specify_settings()
     bool show_zeros = user_interactor->specify_zeros_shown();
 
     board = new Board(board_size, bombs_amount, show_zeros);
-    user_interactor->set_board(board);
 }
 
 void Sapper::init_game()
@@ -70,17 +78,4 @@ void Sapper::init_game()
     board->set_bombs_on_board();
     board->set_fields_values();
     board->update_board();
-}
-
-bool Sapper::continue_or_end()
-{
-    user_interactor->play_once_again_message();
-    bool answer = user_interactor->continue_or_end_game_question();
-    if(!answer)
-    {
-        user_interactor->end_game_message();
-        return false;
-    }
-    user_interactor->continue_game_message();
-    return true;
 }

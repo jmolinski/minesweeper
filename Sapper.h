@@ -1,8 +1,9 @@
 #ifndef SAPPER_H
 #define SAPPER_H
 
-#include "Board.h"
 #include "UserInteractor.h"
+#include "GameplaySaver.h"
+#include "Board.h"
 #include "Gameplay.h"
 
 class Sapper
@@ -14,10 +15,12 @@ public:
 private:
     UserInteractor* user_interactor;
     Board* board;
+    GameplaySaver* gameplay_saver;
     void init_game();
     void specify_settings();
     bool continue_or_end();
-    void start_new_game_or_continue_saved_proggress();
+    void load_game();
+    void run_gameplay();
 };
 
 #endif // SAPPER_H

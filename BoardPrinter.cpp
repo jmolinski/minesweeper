@@ -1,8 +1,27 @@
 #include <iostream>
 #include "BoardPrinter.h"
 
+/*
+Board looks like
+
+       1   2   3   4
+      ---------------
+   1 | x | y | x | y | 1
+     |---+---+---+---|
+   2 | y | x | y | x | 2
+     |---+---+---+---|
+   3 | x | y | x | y | 3
+     |---+---+---+---|
+   4 | y | x | y | x | 4
+      ---------------
+       1   2   3   4
+*/
+
 void BoardPrinter::print_upper_body(UI board_size)
 {
+    // it will look like
+    // 1   2   3   4
+    // -------------
     printf("\n\n");
     printf("                    ");
     for(UI i = 0; i < board_size; i++)
@@ -19,6 +38,7 @@ void BoardPrinter::print_upper_body(UI board_size)
 
 void BoardPrinter::print_line_separating_rows(UI board_size)
 {
+    // line will look like |---+---+---|
     printf("|");
     for(UI j = 0; j < board_size-1; j++)
         printf("---+");
@@ -27,6 +47,7 @@ void BoardPrinter::print_line_separating_rows(UI board_size)
 
 void BoardPrinter::print_row(Board* board, UI row)
 {
+    // row will look like | 1 | 2 | 3 | 4 | row
     printf(" | ");
     for(UI col = 0; col < board->get_board_size(); col++)
         std::cout << board->get_value(row, col) << " | ";

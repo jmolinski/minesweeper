@@ -2,7 +2,6 @@
 #define GAMEPLAYSAVER_H
 
 #include "Board.h"
-#include "Gameplay.h"
 
 class GameplaySaver
 {

@@ -10,42 +10,11 @@ void UserInteractor::no_saved_progress_error_message()
     cin.get();
 }
 
-void UserInteractor::end_game_message()
-{
-    cout << translator.loc("Ok, goodbye! :) [press any button]");
-    cin.sync();
-    cin.get();
-}
-
-void UserInteractor::continue_game_message()
-{
-    cout << translator.loc("Here we go! [press any button]") << "\n";
-    cin.sync();
-    cin.get();
-}
-
-void UserInteractor::play_once_again_message()
-{
-    cout<< translator.loc("Would you like to play once again? [yes/no]\n");
-}
-
 void UserInteractor::game_saved_message()
 {
     cout << translator.loc("\n\nSaved. [Press any button]");
     cin.sync();
     cin.get();
-}
-
-bool UserInteractor::continue_or_end_game_question()
-{
-    string answer;
-    while(answer != "yes" && answer != "no")
-    {
-        cout<<">";
-        cin>>answer;
-        answer = translator.to_en(answer);
-    }
-    return answer == "yes";
 }
 
 void UserInteractor::game_finished_message(bool lose)
@@ -69,6 +38,11 @@ void UserInteractor::specify_UI_language()
     else if(selected == "2")
         language = "PL";
     this->translator.set_language(language);
+}
+
+UserInteractor::UserInteractor()
+{
+    this->translator.set_language("EN");
 }
 
 UI UserInteractor::specify_board_size()
@@ -116,21 +90,10 @@ bool UserInteractor::specify_zeros_shown()
     return input == "true";
 }
 
-string UserInteractor::select_game_mode_question()
-{
-    string game_mode = "";
-    while(game_mode != "1" && game_mode != "2")
-    {
-        cout << translator.loc("\nSelect game mode:\n1.Start new game\n2.Continue saved game\n>");
-        cin >> game_mode;
-    }
-    return (game_mode == "1" ? "new_game" : "saved_progress");
-}
-
-void UserInteractor::print_board()
+void UserInteractor::print_board(Board* board)
 {
     system("CLS");
-    this->board_printer.print(this->board);
+    this->board_printer.print(board);
 }
 
 validated_input UserInteractor::take_command(UI bombs_amount, UI flags)
@@ -139,7 +102,23 @@ validated_input UserInteractor::take_command(UI bombs_amount, UI flags)
     cout << translator.loc("Flags left: ") << flags << "\n";
     cout << translator.loc("Tell me what to do! (action[show/mark/save_game], row, col):\n>");
     cin>>action>>row>>col;
-    return validate_input(action, row, col);
+    return validated_input(translator.to_en(action), row, col);
+}
+
+validated_input::validated_input(std::string action, std::string row, std::string col)
+{
+    this->action = action;
+    try
+    {
+        this->row = stoi(row) - 1;
+        this->col = stoi(col) - 1;
+    }
+    catch(...)
+    {
+        this->action = "invalid";
+        this->row = 0;
+        this->col = 0;
+    }
 }
 
 validated_input::validated_input(std::string action, int row, int col)
@@ -147,25 +126,6 @@ validated_input::validated_input(std::string action, int row, int col)
     this->action = action;
     this->row = row;
     this->col = col;
-}
-
-validated_input UserInteractor::validate_input(string action_u, string row_u, string col_u)
-{
-    int row, col;
-    string action = translator.to_en(action_u);
-    try
-    {
-        row = stoi(row_u) - 1;
-        col = stoi(col_u) - 1;
-    }
-    catch(...)
-    {
-        // error when converting invalid value from string to int with stoi()
-        return validated_input(string("invalid"), 0, 0);
-    }
-    if(board->is_coord_inside_board(row, col) == false || (action != "show" && action != "mark" && action != "save_game"))
-        return validated_input(string("invalid"), 0, 0);
-    return validated_input(action, row, col);
 }
 
 bool UserInteractor::to_int(int& val, string str_val)
@@ -182,7 +142,39 @@ bool UserInteractor::to_int(int& val, string str_val)
     return true;
 }
 
-void UserInteractor::set_board(Board* board)
+void UserInteractor::print_menu()
 {
-    this->board = board;
+    system("cls");
+    cout << "                Sapper\n\n";
+    cout << "1. " << translator.loc("Start new game") << "\n";
+    cout << "2. " << translator.loc("Continue game") << "\n";
+    cout << "3. " << translator.loc("Change language") << "\n";
+    cout << "4. " << translator.loc("About game") << "\n";
+    cout << "5. " << translator.loc("Quit game") << "\n";
+}
+
+UI UserInteractor::menu_selection_question()
+{
+    char chose = ' ';
+    while(chose > '5' || chose < '1')
+    {
+        cout << "\n" << translator.loc("Chose one option:\n>");
+        cin>>chose;
+    }
+    // char to int
+    return chose-48;
+}
+
+void UserInteractor::about_game()
+{
+    cout << "about game\n";
+    cin.sync();
+    cin.get();
+}
+
+void UserInteractor::press_any_button_message()
+{
+    cout << translator.loc("[Press any button]");
+    cin.sync();
+    cin.get();
 }

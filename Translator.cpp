@@ -74,6 +74,20 @@ std::string Translator::PL(std::string message)
         return "\nOkresl czy zera maja byc pokazane od poczatku rozgrywki [prawda/falsz]\n>";
     if(message == "\nInvalid value!")
         return "\nNiepoprawna wartosc!";
+    if(message == "Start new game")
+        return "Rozpocznij nowa gre";
+    if(message == "Continue game")
+        return "Kontynuuj zapisana gre";
+    if(message == "Change language")
+        return "Zmien jezyk";
+    if(message == "About game")
+        return "O grze";
+    if(message == "Quit game")
+        return "Zakoncz gre";
+    if(message == "Chose one option:\n>")
+        return "Wybierz jedna opcje:\n>";
+    if(message == "[Press any button]")
+        return "[Nacisnij dowolny przycisk]";
     // default
     return message;
 }
