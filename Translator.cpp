@@ -46,20 +46,14 @@ std::string Translator::translate(std::string message)
 
 std::string Translator::PL(std::string message)
 {
-    if(message == "Here we go! [press any button]")
-        return "Zaczynajmy! [nacisnij dowolny przycisk]";
     if(message == "Flags left: ")
         return "Pozostale flagi: ";
-    if(message == "Tell me what to do! (action[show/mark/save_game], row , col):\n>")
+    if(message == "Tell me what to do! (action[show/mark/save_game], row, col):\n>")
         return "Powiedz mi co mam zrobic! (akcja[pokaz/oznacz/zapisz_gre], rzad, kolumna)\n>";
     if(message == "\n\nWhat a pity! You stepped on a bomb!\n")
         return "\n\nNiestety! Wszedles na bombe!\n";
     if(message == "\n\nCongratulations! You marked all bombs correctly and saved many human beings!\n")
         return "\n\nGratulacje! Poprawnie zaznaczyles wszystkie bomby i uratowales wielu ludzi!\n";
-    if(message == "Would you like to play once again? [yes/no]\n")
-        return "Czy chcesz zagrac jeszcze raz? [tak/nie]\n";
-    if(message == "Ok, goodbye! :) [press any button]")
-        return "Do nastepnego razu! :) [nacisnij dowolny przycisk]";
     if(message == "\n\nSaved. [Press any button]")
         return "\n\nZapisano. [Nacisnij dowolny przycisk]";
     if(message == "\nSelect game mode:\n1.Start new game\n2.Continue saved game\n>")

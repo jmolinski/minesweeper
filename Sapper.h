@@ -18,8 +18,6 @@ private:
     GameplaySaver* gameplay_saver;
     void init_game();
     void specify_settings();
-    bool continue_or_end();
-    void load_game();
     void run_gameplay();
 };
 

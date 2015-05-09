@@ -84,7 +84,6 @@ char BoardField::get_value()
     return this->value;
 }
 
-
 std::string BoardField::serialize()
 {
     std::stringstream str;

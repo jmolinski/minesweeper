@@ -30,7 +30,7 @@ void UserInteractor::specify_UI_language()
     string selected, language;
     while(selected != "1" && selected != "2")
     {
-        cout<<"Select language:\n1.EN [English]\n2.PL [Polski]\n>";
+        cout<<"\n"<<"Select language:\n1.EN [English]\n2.PL [Polski]\n>";
         cin>>selected;
     }
     if(selected == "1")

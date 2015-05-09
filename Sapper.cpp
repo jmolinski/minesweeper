@@ -30,8 +30,10 @@ void Sapper::run()
             run_gameplay();
             break;
         case 2:
-            load_game();
-            run_gameplay();
+            if(gameplay_saver->load(board) == false)
+                user_interactor->no_saved_progress_error_message();
+            else
+                run_gameplay();
             break;
         case 3:
             user_interactor->specify_UI_language();
@@ -42,16 +44,6 @@ void Sapper::run()
         case 5:
             return;
         }
-    }
-}
-
-void Sapper::load_game()
-{
-    if(gameplay_saver->load(board) == false)
-    {
-        user_interactor->no_saved_progress_error_message();
-        specify_settings();
-        init_game();
     }
 }
 
