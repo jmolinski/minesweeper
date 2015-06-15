@@ -15,7 +15,7 @@ private:
 
     char int_to_char(int x);
 
-    UI shown;
+    UI state;
     UI val_int;
     char value;
 
@@ -31,7 +31,7 @@ public:
     bool is_revealed();
     void set_value(bool show_zeros, UI bombs_around_field);
     std::string serialize();
-    void deserialize(const UI val_int, const UI shown, const char value);
+    void deserialize(const UI val_int, const UI state, const char value);
     char get_value();
 };
 
